@@ -1,17 +1,11 @@
 package solutions.day01
 
-import java.net.URL
-import java.nio.file.Files
-import java.nio.file.Paths
+import utils.Resources
 
-private object Resources {
-    var url: URL = Resources.javaClass.getResource("/solutions/day01.txt")
-    fun getLines(): MutableList<String> = Files.readAllLines(Paths.get(url.path))
-}
 
 fun main() {
 
-    val inputLine = Resources.getLines()[0]
+    val inputLine = Resources.getLine(1)
     println("solutions.day01.part1 = " + part1(inputLine))
     println("solutions.day01.part2 = " + part2(inputLine))
 }
