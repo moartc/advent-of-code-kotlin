@@ -7,8 +7,8 @@ import java.awt.Point
 fun main() {
 
     val inputLine = Resources.getLine(3)
-    println("solutions.day01.part1 = " + part1(inputLine))
-    println("solutions.day01.part2 = " + part2(inputLine))
+    println("part1 = " + part1(inputLine))
+    println("part2 = " + part2(inputLine))
 }
 
 fun part1(input: String): Int {

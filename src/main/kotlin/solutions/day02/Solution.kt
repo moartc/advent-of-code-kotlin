@@ -5,8 +5,8 @@ import utils.Resources
 fun main() {
 
     val inputLines = Resources.getLines(2)
-    println("solutions.day01.part1 = " + part1(inputLines))
-    println("solutions.day01.part2 = " + part2(inputLines))
+    println("part1 = " + part1(inputLines))
+    println("part2 = " + part2(inputLines))
 }
 
 fun part1(lines: List<String>): Int {
