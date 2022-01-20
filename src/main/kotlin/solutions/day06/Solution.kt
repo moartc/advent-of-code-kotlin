@@ -16,7 +16,7 @@ fun part1(input: List<String>): Int {
                 command
             )
         )
-    }.flatMap(BooleanArray::asIterable).count()
+    }.flatMap(BooleanArray::asIterable).count { it }
 }
 
 fun part2(input: List<String>): Int {
