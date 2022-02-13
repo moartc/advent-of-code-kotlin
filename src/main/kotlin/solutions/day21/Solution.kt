@@ -33,7 +33,7 @@ fun fight(player: Player, boss: Player): Player {
     else fight(player.getHit(boss.damage), boss.getHit(player.damage))
 }
 
-class Player(val name: String, var hit: Int, val damage: Int, val armor: Int) {
+class Player(val name: String, val hit: Int, val damage: Int, val armor: Int) {
     constructor(name: String, hit: Int, weapon: Item, armor: Item, ring1: Item, ring2: Item) :
             this(name, hit, weapon.damage + ring1.damage + ring2.damage, armor.armor + ring1.armor + ring2.armor)
 
