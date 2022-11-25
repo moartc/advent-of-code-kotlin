@@ -2,11 +2,12 @@ package utils
 
 class Resources {
     companion object Input {
-        fun getLines(day: Int): List<String> {
+        fun getLines(year: Int, day: Int): List<String> {
             val dayNb = "%02d".format(day)
-            return this::class.java.getResourceAsStream("/solutions/day$dayNb.txt").bufferedReader().readLines()
+            return this::class.java.getResourceAsStream("/aoc${year}/day$dayNb.txt").bufferedReader()
+                .readLines()
         }
 
-        fun getLine(day: Int) = getLines(day)[0]
+        fun getLine(year: Int, day: Int) = getLines(year, day)[0]
     }
 }
