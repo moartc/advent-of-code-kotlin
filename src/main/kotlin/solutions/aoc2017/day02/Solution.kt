@@ -16,8 +16,9 @@ fun part1(input: List<String>): Int {
 }
 
 fun part2(input: List<String>): Int {
-    return input.map { line -> line.split("\\s".toRegex()) }.toList()
-        .map { line -> line.map { str -> str.toInt() } }.toList()
+    return input.asSequence()
+        .map { line -> line.split("\\s".toRegex()) }
+        .map { line -> line.map { str -> str.toInt() } }
         .map { line -> line.cartesianProduct(line) }
         .map { line -> getPair(line) }
         .sumOf { pair -> pair.first / pair.second }
