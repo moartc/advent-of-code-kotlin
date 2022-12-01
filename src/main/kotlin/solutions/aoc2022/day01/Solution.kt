@@ -10,19 +10,16 @@ fun main() {
 }
 
 fun solve(input: List<String>): Pair<Int, Int> {
-
     var elf = 0
-    var max = 0
     val list = mutableListOf<Int>()
-    input.forEach { s ->
-        if (s.isBlank()) {
+    input.forEach {
+        if (it.isBlank()) {
             list.add(elf)
-            max = elf.coerceAtLeast(max)
             elf = 0
         } else {
-            elf += s.toInt()
+            elf += it.toInt()
         }
     }
     list.sortDescending()
-    return Pair(max, list.take(3).sum())
+    return Pair(list.first(), list.take(3).sum())
 }
