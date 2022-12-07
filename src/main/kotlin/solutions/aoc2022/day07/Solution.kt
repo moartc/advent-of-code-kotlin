@@ -31,9 +31,7 @@ fun createMap(input: List<String>): Map<String, Int> {
             }
         }
     }
-    return map.map { kv ->
-        kv.key to getTotalForKey(kv.key, map)
-    }.toMap()
+    return map.keys.associateWith { getTotalForKey(it, map) }
 }
 
 fun getTotalForKey(key: String, map: MutableMap<String, MutableList<String>>): Int {
