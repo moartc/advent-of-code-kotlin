@@ -6,8 +6,8 @@ fun main() {
     val input = Resources.getLines(2022, 8)
     val grid = input.map { line -> line.map { it.digitToInt() } }
 
-    println("part1 = ${part1(grid) == 1816}")
-    println("part2 = ${part2(grid) == 383520}")
+    println("part1 = ${part1(grid)}")
+    println("part2 = ${part2(grid)}")
 }
 
 fun part1(grid: List<List<Int>>): Int {
