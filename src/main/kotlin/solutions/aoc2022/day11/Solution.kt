@@ -30,23 +30,21 @@ fun newValue(item: Long, char: Char, value: String): Long {
 
 fun solve(input: List<String>, reps: Int, divBy3: Boolean): Long {
     val monkeys = parseInput(input)
-    val insp = mutableMapOf<Int, Long>()
+    val insp = IntArray(monkeys.size)
     val allDivisors = monkeys.map { it.divisibleBy }.reduce { acc, i -> acc * i }
     repeat(reps) {
         monkeys.forEachIndexed { index, monkey ->
+            insp[index] += monkey.items.size
             monkey.items.forEach { item ->
-                val toIncrement = insp.getOrDefault(index, 0)
-                insp[index] = toIncrement + 1
-                val newVal = newValue(item, monkey.opChar, monkey.opVal)
-                val valToThrow = newVal % allDivisors / if (divBy3) 3 else 1
+                val valToThrow = newValue(item, monkey.opChar, monkey.opVal) % allDivisors / if (divBy3) 3 else 1
                 val throwTo = if (valToThrow % monkey.divisibleBy == 0L) monkey.ifTrue else monkey.ifFalse
                 monkeys[throwTo].items.add(valToThrow)
             }
             monkey.items = mutableListOf()
         }
     }
-    val twoMostActiveEvent = insp.values.sorted().takeLast(2)
-    return twoMostActiveEvent[0] * twoMostActiveEvent[1]
+    val twoMostActiveEvent = insp.sorted().takeLast(2)
+    return twoMostActiveEvent[0].toLong() * twoMostActiveEvent[1].toLong()
 }
 
 data class Monkey(var items: MutableList<Long>, val opChar: Char, val opVal: String, val divisibleBy: Int, val ifTrue: Int, val ifFalse: Int)
