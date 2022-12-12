@@ -13,5 +13,22 @@ fun List<Int>.product() = this.reduce { acc, number -> acc * number }
 fun List<Long>.product() = this.reduce { acc, number -> acc * number }
 
 fun <T> List<List<T>>.intersection(): List<T> {
-    return this.toMutableSet().map { it.toMutableSet() }.reduce { acc, it -> acc.apply { retainAll(it.toSet()) } }.toList()
+    return this.reduce{ acc, ts ->acc.intersect(ts.toSet()).toList()}
 }
+
+inline fun <T> Iterable<T>.splitOn(predicate: (T) -> Boolean): List<List<T>> {
+    val toRet = mutableListOf<MutableList<T>>()
+    var newList = mutableListOf<T>()
+    this.forEach {
+        if(predicate(it)) {
+            toRet += newList
+            newList = mutableListOf()
+        } else {
+            newList += it
+        }
+    }
+    toRet += newList
+    return toRet
+}
+
+fun Iterable<String>.splitOnEmpty(): List<List<String>> = this.splitOn { it.isEmpty() }
