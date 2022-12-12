@@ -12,4 +12,6 @@ fun <T> List<List<T>>.deepCopyImmutable(): List<List<T>> = this.map { it.toList(
 fun List<Int>.product() = this.reduce { acc, number -> acc * number }
 fun List<Long>.product() = this.reduce { acc, number -> acc * number }
 
-
+fun <T> List<List<T>>.intersection(): List<T> {
+    return this.toMutableSet().map { it.toMutableSet() }.reduce { acc, it -> acc.apply { retainAll(it.toSet()) } }.toList()
+}
