@@ -1,6 +1,8 @@
 package solutions.aoc2022.day12
 
-import utils.*
+import utils.Resources
+import utils.algorithms.bfs
+import utils.algorithms.withoutDiagonal
 
 fun main() {
     val input = Resources.getLines(2022, 12)
