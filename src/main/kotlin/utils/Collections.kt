@@ -32,3 +32,7 @@ inline fun <T> Iterable<T>.splitOn(predicate: (T) -> Boolean): List<List<T>> {
 }
 
 fun Iterable<String>.splitOnEmpty(): List<List<String>> = this.splitOn { it.isEmpty() }
+
+fun <T>allCombinations(l1 : List<T>, l2 : List<T>) : List<Pair<T, T>> {
+    return l1.flatMap { i -> l2.map { j -> i to j } }
+}
