@@ -15,7 +15,7 @@ fun part2(input: List<String>): String {
     val registerM = mutableMapOf<String, String>()
     val fixedInput = input.map { i ->
         if (i.contains("root")) i.replace("+", "=")
-        else if(i.contains("humn")) {
+        else if(i.contains("humn:")) {
             val split = i.split(" ")
             split[0] + " x"
         } else {
@@ -31,93 +31,7 @@ fun part2(input: List<String>): String {
         }
     }
 
-    val register = registerM.toMutableMap()
-    while (!register.containsKey("root")) {
-        ops.forEach {
-            when (it) {
-                is Complex -> {
-                    val fM = it.first
-                    val sM = it.second
-                    if (register.containsKey(fM) && register.containsKey(sM)) {
-                        val op = it.operation
-                        when (op) {
-                            '+' -> {
-                                val ff = register[fM]!!
-                                val fs = register[sM]!!
-                                if (ff.contains("x") || fs.contains("x")) {
-                                    if (ff.equals("0"))
-                                        register[it.monkey] = fs
-                                    else if (fs.equals("0"))
-                                        register[it.monkey] = ff
-                                    else
-                                        register[it.monkey] = "(" + ff + "+" + fs + ")"
-
-                                } else {
-                                    val res = ff.toLong() + fs.toLong()
-                                    register[it.monkey] = res.toString()
-                                }
-
-                            }
-
-                            '-' -> {
-                                val ff = register[fM]!!
-                                val fs = register[sM]!!
-                                if (ff.contains("x") || fs.contains("x")) {
-                                    if (ff.equals("0"))
-                                        register[it.monkey] = fs
-                                    else if (fs.equals("0"))
-                                        register[it.monkey] = ff
-                                    else
-                                        register[it.monkey] = "(" + ff + "-" + fs + ")"
-                                } else {
-                                    val res = ff.toLong() - fs.toLong()
-                                    register[it.monkey] = res.toString()
-                                }
-                            }
-
-                            '/' -> {
-                                val ff = register[fM]!!
-                                val fs = register[sM]!!
-                                if (ff.contains("x") || fs.contains("x")) {
-                                    if (ff == ("0"))
-                                        register[it.monkey] = "0"
-                                    else
-                                        register[it.monkey] = "(" + ff + "/" + fs + ")"
-                                } else {
-                                    val res = ff.toLong() / fs.toLong()
-                                    register[it.monkey] = res.toString()
-                                }
-                            }
-
-                            '*' -> {
-                                val ff = register[fM]!!
-                                val fs = register[sM]!!
-                                if (ff.contains("x") || fs.contains("x")) {
-                                    if (ff == ("0") || fs == "0")
-                                        register[it.monkey] = "0"
-                                    else
-                                        register[it.monkey] = "(" + ff + "*" + fs + ")"
-                                } else {
-                                    val res = ff.toLong() * fs.toLong()
-                                    register[it.monkey] = res.toString()
-                                }
-                            }
-
-                            '=' -> {
-                                val ff = register[fM]!!
-                                val fs = register[sM]!!
-                                register[it.monkey] = "(" + ff + "=" + fs + ")"
-
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    val res = register["root"]!!
-    return res
-
+    return solve(ops, registerM)
 
 }
 
