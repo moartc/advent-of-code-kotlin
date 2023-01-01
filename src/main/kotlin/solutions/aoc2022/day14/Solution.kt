@@ -26,7 +26,7 @@ fun part2(borders: Set<Pair<Int, Int>>): Int {
 }
 
 fun simulation(borders: MutableSet<Pair<Int, Int>>): Int {
-    val maxY = borders.maxBy { it.first }.first
+    val maxY = borders.maxBy { it.second }.second
     var counter = 0
     while (!borders.contains(500 to 0)) {
         var ball = 500 to 0
