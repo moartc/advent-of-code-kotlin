@@ -45,5 +45,7 @@ class CircularList<out T>(private val list: List<T>) : List<T> by list {
     private fun Int.safely(): Int =
         if (this < 0) (this % size + size) % size
         else this % size
-
 }
+
+fun <T> Array<T>.rotateLeft(n: Int) = drop(n) + take(n)
+fun <T> Array<T>.rotateRight(n: Int) = takeLast(n) + dropLast(n)
