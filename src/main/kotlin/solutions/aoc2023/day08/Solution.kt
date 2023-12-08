@@ -66,16 +66,16 @@ fun part2(input: List<String>): Any {
     var currInstIdx = 0
     var startingNodes = graph.keys.filter { k -> k.last() == 'A' }.toList() // find all starting nodes
     val nextNodesToGo = startingNodes.toMutableList()
-    val arrayOfOffsets = Array(nextNodesToGo.size) { -1 }
+    val arrayOfCycles = Array(nextNodesToGo.size) { -1 }
     while (true) {
         startingNodes.forEachIndexed { index, s ->
-            if (s.last() == 'Z' && arrayOfOffsets[index] == -1) {
-                arrayOfOffsets[index] = steps
+            if (s.last() == 'Z' && arrayOfCycles[index] == -1) {
+                arrayOfCycles[index] = steps
             }
         }
-        // if there are all expected offsets found
-        if (arrayOfOffsets.all { x -> x != -1 }) {
-            return lcm(arrayOfOffsets.map { x -> x.toLong() }.toLongArray())
+        // if there are all expected cycle found
+        if (arrayOfCycles.all { x -> x != -1 }) {
+            return lcm(arrayOfCycles.map { x -> x.toLong() }.toLongArray())
         }
         nextNodesToGo.clear()
         startingNodes.forEach { node ->
