@@ -44,8 +44,8 @@ fun part1(input: List<String>): Int {
 }
 
 /*
-Another offset task that I tried to brute force before I realized that it didn't make sense.
-The initial implementation was to write out the offsets and calculate the lcm in some online calculator
+Another cycle task that I tried to brute force before I realized that it didn't make sense.
+The initial implementation was to write out the cycles and calculate the lcm in some online calculator
 lcm and gcd added to math utils.
  */
 fun part2(input: List<String>): Any {
