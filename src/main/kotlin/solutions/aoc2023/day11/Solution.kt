@@ -1,183 +1,51 @@
 package solutions.aoc2023.day11
 
 import utils.Resources
-import utils.algorithms.bfs
 import utils.algorithms.bfsWithPath
 import utils.algorithms.withoutDiagonal
-import java.math.BigInteger
+import utils.allUniqueCombinations
 
 fun main() {
 
-    val inputLine =
-        Resources.getLines(2023, 11)
-//        Resources.getLinesExample(2023, 11)
-    println("part1 = ${part1(inputLine)}")
-    println("part2 = ${part2(inputLine)}")
+    val inputLine = Resources.getLines(2023, 11)
+    println("part1 = ${solve(inputLine, 2)}")
+    println("part2 = ${solve(inputLine, 1000000)}")
 }
 
-fun part1(input: List<String>): Int {
+fun solve(input: List<String>, increaseBy: Int): Long {
 
-    input.forEach { it.log("p1") }
+    val chars = input.map { l -> l.toMutableList() }.toMutableList()
 
-    val toMutableList = mutableListOf<String>()
-
-
-
-    for (y in input) {
-        if (y.all { x -> x.equals('.') }) { // in row
-            toMutableList.add(y)
-        }
-        toMutableList.add(y)
-    }
-
-    "first".log()
-    toMutableList.forEach { line ->
-        println(line)
-    }
-
-
-    val chars = toMutableList.map { s -> s.toMutableList() }
-
-    var added = 0
-    for (col in input[0].indices) {
-        if (allDotsInRow(col, input)) {
-
-            col.log("col")
-            // add new row
-            for (row in chars.indices) {
-                chars[row].add(col + added, '.')
-            }
-            added++
+    input.forEachIndexed { index, str ->
+        if (str.all { x -> x == '.' }) {
+            chars[index] = "E".repeat(input[0].length).toMutableList()
         }
     }
 
+    fun isEmptyColumn(col: Int, list: List<String>): Boolean = list.none { line -> line[col] != '.' && line[col] != 'E' }
 
-    chars.forEach { line ->
-        line.forEach { c -> print(c) }
-        println()
-    }
-
-    fun canVisit(currentPos: Pair<Int, Int>, nextPos: Pair<Int, Int>): Boolean {
-        return true
-    }
-
-    val positions = mutableListOf<Pair<Int,Int>>()
-    for(y in chars.indices) {
-        for (x in chars[0].indices) {
-            if(chars[y][x] == '#') {
-                positions.add(y to x)
-            }
-        }
-    }
-    var sum = 0
-
-    for(i1 in positions.indices) {
-        for(i2 in positions.indices) {
-            if(i2 > i1) {
-                val bfs = bfs(chars, withoutDiagonal, positions[i1], positions[i2], ::canVisit)
-                println("for $i1 and $i2 its $bfs")
-                sum += bfs
+    input[0].indices.forEach { col ->
+        if (isEmptyColumn(col, input)) {
+            chars.indices.forEach { row ->
+                chars[row][col] = 'E'
             }
         }
     }
 
-    sum.log("result")
+    val positions = chars.flatMapIndexed { y, ch -> ch.mapIndexed { x, c -> (y to x) to c } }
+        .filter { p -> p.second == '#' }
+        .map { it.first }
 
-    return sum
+    val allUniqueCombinations = allUniqueCombinations(positions)
+
+    return allUniqueCombinations.sumOf { (i1, i2) ->
+        val bfs = bfsWithPath(chars, withoutDiagonal, i1, i2) { _, _ -> true }
+        var bfsRes = bfs.first.toLong()
+        for (pair in bfs.second) {
+            if (chars[pair.first][pair.second] == 'E') {
+                bfsRes += (increaseBy - 1)
+            }
+        }
+        bfsRes
+    }
 }
-fun part2(input: List<String>): BigInteger {
-
-    input.forEach { it.log("p1") }
-
-    val toMutableList = mutableListOf<String>()
-
-
-
-    for (y in input) {
-        if (y.all { x -> x.equals('.') }) { // in row
-            toMutableList.add("E".repeat(y.length))
-        }
-        toMutableList.add(y)
-    }
-
-    "first".log()
-    toMutableList.forEach { line ->
-        println(line)
-    }
-
-
-    val chars = toMutableList.map { s -> s.toMutableList() }
-
-    var added = 0
-    for (col in input[0].indices) {
-        if (allDotsInRow(col, input)) {
-
-            col.log("col")
-            // add new row
-            for (row in chars.indices) {
-                chars[row].add(col + added, 'E')
-            }
-            added++
-        }
-    }
-
-
-    chars.forEach { line ->
-        line.forEach { c -> print(c) }
-        println()
-    }
-
-    fun canVisit(currentPos: Pair<Int, Int>, nextPos: Pair<Int, Int>): Boolean {
-        return true
-    }
-
-    val positions = mutableListOf<Pair<Int, Int>>()
-    for (y in chars.indices) {
-        for (x in chars[0].indices) {
-            if (chars[y][x] == '#') {
-                positions.add(y to x)
-            }
-        }
-    }
-    var sum = BigInteger.ZERO
-
-    for (i1 in positions.indices) {
-        for (i2 in positions.indices) {
-            if (i2 > i1) {
-                val bfs = bfsWithPath(chars, withoutDiagonal, positions[i1], positions[i2], ::canVisit)
-                var bfsRes = bfs.first
-                for (pair in bfs.second) {
-                    val cOnPos = chars[pair.first][pair.second]
-                    if (cOnPos == 'E') {
-                        bfsRes += 1000000 - 2
-                    }
-                }
-//                println("for $i1 and $i2 its $bfsRes")
-                sum = sum.add(bfsRes.toBigInteger())
-                println("for ${positions[i1]} and ${positions[i2]} it's $sum")
-            }
-        }
-    }
-
-    sum.log("result")
-
-    return sum
-}
-
-
-fun allDotsInRow(row: Int, str: List<String>): Boolean {
-
-    for (line in str) {
-        if (line[row] != '.') {
-            return false
-        }
-    }
-    return true
-}
-
-
-private fun <T> T.log(): T = also { println("%s".format(this)) }
-private fun <T> T.log(comment: String): T = also { println("%s: %s".format(comment, this)) }
-
-
-
