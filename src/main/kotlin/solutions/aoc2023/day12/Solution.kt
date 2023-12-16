@@ -15,7 +15,7 @@ fun part1(input: List<String>): Long {
     return input.sumOf {
         val split1 = it.split(" ")
         val left = split1[0]
-        var nums = split1[1].split(",").map { it.toInt() }.toMutableList()
+        val nums = split1[1].split(",").map { it.toInt() }.toMutableList()
         if (left.first() == '#') {
             processHash(left.substring(1), nums, 0, 1)
         } else {
@@ -28,7 +28,7 @@ fun part2(input: List<String>): Long {
     return input.sumOf {
         val split1 = it.split(" ")
         val left = split1[0]
-        var nums = split1[1].split(",").map { it.toInt() }.toMutableList()
+        val nums = split1[1].split(",").map { it.toInt() }.toMutableList()
         val left2 = "$left?$left?$left?$left?$left"
         val nums2 = nums + nums + nums + nums + nums
         if (left2.first() == '#') {
@@ -105,7 +105,7 @@ fun processHash(current: String, nums: List<Int>, result: Long, currentHashCount
 
 // cache for part 2
 val cache = mutableMapOf<Pair<String, List<Int>>, Long>()
-tailrec fun processDefault(current: String, nums: List<Int>, result: Long): Long {
+fun processDefault(current: String, nums: List<Int>, result: Long): Long {
 
     // last char
     if (current == "") {

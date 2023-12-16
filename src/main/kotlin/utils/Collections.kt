@@ -53,8 +53,7 @@ class CircularList<out T>(private val list: List<T>) : List<T> by list {
         else this % size
 }
 
-fun <T> Array<T>.rotateLeft(n: Int) = drop(n) + take(n)
-fun <T> Array<T>.rotateRight(n: Int) = takeLast(n) + dropLast(n)
+
 
 fun <T> Collection<T>.firstIndexed(predicate: (T) -> Boolean): Pair<Int, T> {
     return asSequence().mapIndexed(::Pair).first { (_, v) -> predicate(v) }
@@ -87,3 +86,6 @@ fun CharSequence.lastIndexedOrNull(predicate: (Char) -> Boolean): Pair<Int, Char
         }
     return null
 }
+
+fun <T> List<T>.shiftLeft(n: Int) = drop(n) + take(n)
+fun <T> List<T>.shiftRight(n: Int) = takeLast(n) + dropLast(n)
