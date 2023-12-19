@@ -1,7 +1,7 @@
 package solutions.aoc2022.day19
 
 import utils.Resources
-import utils.getInts
+import utils.parser.getInts
 
 fun main() {
     val input = Resources.getLines(2022, 19)

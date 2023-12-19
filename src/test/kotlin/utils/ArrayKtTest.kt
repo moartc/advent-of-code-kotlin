@@ -2,6 +2,7 @@ package utils
 
 import org.junit.jupiter.api.Assertions.assertArrayEquals
 import org.junit.jupiter.api.Test
+import utils.array.extensions.*
 import java.util.*
 
 class ArrayKtTest {

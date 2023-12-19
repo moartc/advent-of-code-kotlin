@@ -1,7 +1,7 @@
 package solutions.aoc2022.day17
 
-import utils.CircularList
 import utils.Resources
+import utils.collections.CircularList
 
 fun main() {
     val input = Resources.getLines(2022, 17)

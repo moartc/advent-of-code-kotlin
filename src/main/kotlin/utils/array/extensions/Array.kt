@@ -1,4 +1,4 @@
-package utils
+package utils.array.extensions
 
 fun <T> Array<T>.shiftLeftMutable(d: Int) {
     val n = d % this.size  // just in case

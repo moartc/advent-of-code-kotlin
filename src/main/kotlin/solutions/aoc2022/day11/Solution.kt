@@ -1,8 +1,8 @@
 package solutions.aoc2022.day11
 
 import utils.Resources
-import utils.getInt
-import utils.getInts
+import utils.parser.getInt
+import utils.parser.getInts
 
 fun main() {
     val input = Resources.getLines(2022, 11)

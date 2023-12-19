@@ -1,6 +1,10 @@
 package solutions.aoc2022.day05
 
 import utils.*
+import utils.collections.extensions.deepCopyMutable
+import utils.collections.extensions.transpose
+import utils.parser.getChars
+import utils.parser.getInts
 
 fun main() {
     val inputLines = Resources.getLines(2022, 5)

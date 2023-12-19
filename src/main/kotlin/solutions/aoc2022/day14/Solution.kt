@@ -1,7 +1,7 @@
 package solutions.aoc2022.day14
 
 import utils.Resources
-import utils.allCombinations
+import utils.collections.allCombinations
 
 fun main() {
 

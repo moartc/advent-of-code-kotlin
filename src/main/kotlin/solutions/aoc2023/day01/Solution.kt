@@ -1,8 +1,8 @@
 package solutions.aoc2023.day01
 
 import utils.Resources
-import utils.firstIndexedOrNull
-import utils.lastIndexedOrNull
+import utils.collections.extensions.firstIndexedOrNull
+import utils.collections.extensions.lastIndexedOrNull
 
 fun main() {
     val inputLine = Resources.getLines(2023, 1)

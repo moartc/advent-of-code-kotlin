@@ -1,4 +1,4 @@
-package utils
+package utils.parser
 
 fun String.getUInts(): List<Int> = """\d+""".toRegex().findAll(this).map(MatchResult::value).map(String::toInt).toList()
 fun String.getUInt(): Int? = """\d+""".toRegex().find(this)?.value?.toInt()

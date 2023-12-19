@@ -3,7 +3,7 @@ package solutions.aoc2023.day11
 import utils.Resources
 import utils.algorithms.bfsWithPath
 import utils.algorithms.withoutDiagonal
-import utils.allUniqueCombinations
+import utils.collections.allUniqueCombinations
 
 fun main() {
 

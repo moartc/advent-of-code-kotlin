@@ -1,8 +1,8 @@
 package solutions.aoc2023.day14
 
 import utils.Resources
-import utils.deepCopy
-import utils.rotateClockwise
+import utils.array.extensions.deepCopy
+import utils.array.extensions.rotateClockwise
 
 fun main() {
 

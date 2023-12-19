@@ -2,7 +2,7 @@ package solutions.aoc2023.day08
 
 import utils.Resources
 import utils.algorithms.lcm
-import utils.splitOnEmpty
+import utils.collections.extensions.splitOnEmpty
 
 
 fun main() {

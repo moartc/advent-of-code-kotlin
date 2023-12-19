@@ -1,8 +1,8 @@
 package solutions.aoc2022.day13
 
 import utils.Resources
-import utils.parseArray
-import utils.splitOnEmpty
+import utils.collections.extensions.splitOnEmpty
+import utils.parser.parseArray
 
 
 fun main() {

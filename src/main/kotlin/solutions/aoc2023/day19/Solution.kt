@@ -1,7 +1,7 @@
 package solutions.aoc2023.day19
 
 import utils.Resources
-import utils.splitOnEmpty
+import utils.collections.extensions.splitOnEmpty
 import kotlin.math.max
 import kotlin.math.min
 

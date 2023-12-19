@@ -1,7 +1,7 @@
 package solutions.aoc2023.day09
 
 import utils.Resources
-import utils.getInts
+import utils.parser.getInts
 
 fun main() {
 

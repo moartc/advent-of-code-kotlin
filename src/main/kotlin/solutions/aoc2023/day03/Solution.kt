@@ -1,7 +1,7 @@
 package solutions.aoc2023.day03
 
 import utils.Resources
-import utils.product
+import utils.collections.extensions.product
 
 fun main() {
 

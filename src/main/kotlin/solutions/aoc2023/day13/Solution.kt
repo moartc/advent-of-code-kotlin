@@ -1,7 +1,7 @@
 package solutions.aoc2023.day13
 
 import utils.Resources
-import utils.splitOnEmpty
+import utils.collections.extensions.splitOnEmpty
 
 fun main() {
 

@@ -1,8 +1,8 @@
 package solutions.aoc2023.day05
 
 import utils.Resources
-import utils.getLongs
-import utils.splitOn
+import utils.collections.extensions.splitOn
+import utils.parser.getLongs
 
 
 fun main() {
