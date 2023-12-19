@@ -1,8 +1,7 @@
 package solutions.aoc2022.day14
 
 import utils.Resources
-import utils.allPointsBetweenIntPairs
-import utils.allPointsBetweenStringPairs
+import utils.allCombinations
 
 fun main() {
 
@@ -52,4 +51,18 @@ fun simulation(borders: MutableSet<Pair<Int, Int>>): Int {
         counter += 1
     }
     return counter
+}
+
+fun allPointsBetweenStringPairs(p1: Pair<String, String>, p2: Pair<String, String>): List<Pair<Int, Int>> {
+
+    val p1Int = p1.first.toInt() to p1.second.toInt()
+    val p2Int = p2.first.toInt() to p2.second.toInt()
+    return allPointsBetweenIntPairs(p1Int, p2Int)
+}
+// TODO create and use fixed version of these methods
+fun allPointsBetweenIntPairs(p1: Pair<Int, Int>, p2: Pair<Int, Int>): List<Pair<Int, Int>> {
+
+    val y = if (p1.first < p2.first) p1.first..p2.first else p2.first..p1.first
+    val x = if (p1.second < p2.second) p1.second..p2.second else p2.second..p1.second
+    return allCombinations(y.toList(), x.toList())
 }
