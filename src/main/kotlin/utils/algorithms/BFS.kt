@@ -51,7 +51,7 @@ fun <T> bfsWithPath(
     start: Pair<Int, Int>,
     end: Pair<Int, Int>,
     canVisit: (currentPos: Pair<Int, Int>, nextPos: Pair<Int, Int>) -> Boolean
-) : Pair<Int, List<Pair<Int, Int>>> {
+): Pair<Int, List<Pair<Int, Int>>> {
 
     val sizeY = grid.size - 1
     val sizeX = grid[0].size - 1
@@ -60,10 +60,10 @@ fun <T> bfsWithPath(
         return !(nextPos.first < 0 || nextPos.first > sizeY || nextPos.second < 0 || nextPos.second > sizeX)
     }
 
-    fun collectShortestPath(last : Pair<Int, Int >, prevNodeForShortestPath : Map<Pair<Int, Int>, Pair<Int, Int>>): List<Pair<Int, Int>> {
+    fun collectShortestPath(last: Pair<Int, Int>, prevNodeForShortestPath: Map<Pair<Int, Int>, Pair<Int, Int>>): List<Pair<Int, Int>> {
         val toReturn = mutableListOf(last)
         var next = prevNodeForShortestPath[last]
-        while(next != null) {
+        while (next != null) {
             toReturn.add(next)
             next = prevNodeForShortestPath[next]
         }
@@ -97,4 +97,44 @@ fun <T> bfsWithPath(
         }
     }
     return -1 to emptyList()
+}
+
+/**
+ * assumes no dead ends
+ * Created for day 10 2023
+ */
+fun <T> bfsPathFromPointToPoint(
+    grid: List<List<T>>,
+    possibleMoves: Array<Pair<Int, Int>>,
+    start: Pair<Int, Int>,
+    end: Pair<Int, Int>,
+    canVisit: (currentPos: Pair<Int, Int>, nextPos: Pair<Int, Int>) -> Boolean
+): MutableSet<Pair<Int, Int>> {
+
+    val sizeY = grid.size - 1
+    val sizeX = grid[0].size - 1
+
+    fun isPosValid(nextPos: Pair<Int, Int>): Boolean {
+        return !(nextPos.first < 0 || nextPos.first > sizeY || nextPos.second < 0 || nextPos.second > sizeX)
+    }
+
+    fun getNext(current: Pair<Int, Int>) = possibleMoves
+        .map { move -> current.first + move.first to current.second + move.second }
+        .filter { n -> isPosValid(n) && canVisit(current, n) }
+
+    val visited = mutableSetOf<Pair<Int, Int>>()
+    visited.add(start)
+
+    while (true) {
+        val current = visited.last()
+        val possibleNextMoves = getNext(current)
+        val nonEndMove = possibleNextMoves.firstOrNull { x -> x != end && !visited.contains(x) }
+        if(nonEndMove != null) {
+            visited.add(nonEndMove)
+        } else if(possibleNextMoves.contains(end)){ // can only finish
+            return visited
+        } else {
+            error("cannot find loop")
+        }
+    }
 }
