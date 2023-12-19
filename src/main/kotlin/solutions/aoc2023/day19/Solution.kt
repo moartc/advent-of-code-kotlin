@@ -11,7 +11,7 @@ fun main() {
     val inputLine =
         Resources.getLines(2023, 19)
 //        Resources.getLinesExample(2023, 19)
-//    println("part1 = ${part1(inputLine)}")
+    println("part1 = ${part1(inputLine)}")
     println("part2 = ${part2(inputLine)}")
 }
 
@@ -121,7 +121,7 @@ fun part2(input: List<String>): Long {
         tot += res
     }
     tot.log("tot")
-    return 123L
+    return tot
     //256000000000000
     //167409079868000
 }
@@ -199,20 +199,17 @@ fun part1(input: List<String>): Int {
 
     allValues.forEach { it.log("vvp") }
 
-    var totSum = 0
+    var result = 0
     allValues.forEach {
-        var result = 0
-
         "will process".log()
         val answer = process("in", allRules, it)
         answer.log("answer")
         if (answer == "A") {
             result += it.values.sum()
         }
-        totSum += result
     }
-        totSum.log("tot")
-    return totSum
+    result.log("res")
+    return result
 }
 
 
