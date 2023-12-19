@@ -1,6 +1,5 @@
 package solutions.aoc2023.day19
 
-import org.junit.jupiter.api.fail
 import utils.Resources
 import utils.splitOnEmpty
 import kotlin.math.max
@@ -8,277 +7,164 @@ import kotlin.math.min
 
 fun main() {
 
-    val inputLine =
-        Resources.getLines(2023, 19)
-//        Resources.getLinesExample(2023, 19)
+    val inputLine = Resources.getLines(2023, 19)
     println("part1 = ${part1(inputLine)}")
     println("part2 = ${part2(inputLine)}")
+}
+
+
+fun part1(input: List<String>): Int {
+
+    val splitOnEmpty = input.splitOnEmpty()
+    val workflowsPart = splitOnEmpty[0]
+    val valuesPart = splitOnEmpty[1]
+    val workflows = parseWorkflows(workflowsPart)
+    val allValues = parseValues(valuesPart)
+
+
+    fun process(currentName: String, workflows: List<Workflow>, valMap: Map<Char, Int>): String {
+
+        if (currentName in "AR") {
+            return currentName
+        }
+        val workflowToProcess = workflows.first { r -> r.name == currentName }
+
+        workflowToProcess.rules.forEachIndexed { index, rule ->
+            val (cat, op, intVal, ifTrue) = rule
+            val condition = if (op == '<') valMap[cat]!! < intVal else valMap[cat]!! > intVal
+            if (condition) {
+                return process(ifTrue, workflows, valMap)
+            } else if (index == workflowToProcess.rules.lastIndex) {
+                return process(workflowToProcess.noMatch, workflows, valMap)
+            }
+        }
+        error("cannot finish")
+    }
+
+    return allValues
+        .map { value -> value to process("in", workflows, value) }
+        .filter { p -> p.second == "A" }
+        .sumOf { p -> p.first.values.sum() }
 }
 
 
 fun part2(input: List<String>): Long {
 
     val splitOnEmpty = input.splitOnEmpty()
-    val rules = splitOnEmpty[0]
-    val values = splitOnEmpty[1]
-    val allRules = mutableListOf<Rule>()
-    rules.forEach {
-        it.log()
-        val wfName = it.takeWhile { x -> x != '{' }
-        wfName.log("name")
-        val conditions = it.takeLastWhile { x -> x != '{' }.dropLast(1)
-        val split = conditions.split(",")
+    val workflowsPart = splitOnEmpty[0]
+    val workflows = parseWorkflows(workflowsPart)
+    val processResult = processP2(workflows)
 
-        val opList = mutableListOf<Op>()
-        var alt = ""
-        for ((index, s) in split.withIndex()) {
-            if (index != split.lastIndex) {
-                val parseCond = parseCond(s)
-                opList.add(parseCond)
-                parseCond.log("condition parsed")
-            } else {
-                alt = s
-            }
+    data class Range(var min: Int, var max: Int)
+
+    return processResult.sumOf {
+
+        val s = Range(1, 4000)
+        val x = Range(1, 4000)
+        val m = Range(1, 4000)
+        val a = Range(1, 4000)
+
+        val ranges = mutableMapOf(
+            's' to s,
+            'a' to a,
+            'm' to m,
+            'x' to x
+        )
+
+        fun updateMin(c: Char, valInt: Int) {
+            ranges[c]!!.min = max(ranges[c]!!.min, valInt)
         }
-        val newRule = Rule(wfName, opList, alt)
-        allRules.add(newRule)
-        newRule.log("new rule!!!!")
-    }
-    val answer = pp2("in", allRules, mutableListOf())
 
-    glob.forEach { it.log("pg") }
+        fun updateMax(c: Char, valInt: Int) {
+            ranges[c]!!.max = min(ranges[c]!!.max, valInt)
+        }
 
-
-    var tot = 0L
-    glob.forEach {
-
-        var xMax = 4000
-        var mMax = 4000
-        var aMax = 4000
-        var sMax = 4000
-        var xMin = 1
-        var mMin = 1
-        var aMin = 1
-        var sMin = 1
-        var res = 1L
-        it.forEach { (v, o) ->
-            val (name, opChar, valInt, _) = o
-            if (v == true) {
+        it.forEach { (isTrue, rule) ->
+            val (name, opChar, valInt, _) = rule
+            if (isTrue) {
                 if (opChar == '>') {
-                    if (name == "s") {
-                        sMin = max(sMin, valInt + 1)
-                    } else if (name == "m") {
-                        mMin = max(mMin, valInt + 1)
-                    } else if (name == "x") {
-                        xMin = max(xMin, valInt + 1)
-                    } else if (name == "a") {
-                        aMin = max(aMin, valInt + 1)
-                    }
-                } else { // true that <
-                    if (name == "s") {
-                        sMax = min(valInt - 1, sMax)
-                    } else if (name == "m") {
-                        mMax = min(valInt - 1, mMax)
-                    } else if (name == "x") {
-                        xMax = min(valInt - 1, xMax)
-                    } else if (name == "a") {
-                        aMax = min(valInt - 1, aMax)
-                    }
+                    updateMin(name, valInt + 1)
+                } else {
+                    updateMax(name, valInt - 1)
                 }
-            } else { // false
-                if (opChar == '>') { // true that <= v
-                    if (name == "s") {
-                        sMax = min(valInt, sMax)
-                    } else if (name == "m") {
-                        mMax = min(valInt, mMax)
-                    } else if (name == "x") {
-                        xMax = min(valInt, xMax)
-                    } else if (name == "a") {
-                        aMax = min(valInt, aMax)
-                    }
-
-                } else { //false  that < -> true >=
-                    if (name == "s") {
-                        sMin = max(sMin, valInt)
-                    } else if (name == "m") {
-                        mMin = max(mMin, valInt)
-                    } else if (name == "x") {
-                        xMin = max(xMin, valInt)
-                    } else if (name == "a") {
-                        aMin = max(aMin, valInt)
-                    }
+            } else {
+                if (opChar == '>') {
+                    updateMax(name, valInt)
+                } else {
+                    updateMin(name, valInt)
                 }
-
             }
         }
-        res *= (mMax - mMin + 1)
-        res *= (aMax - aMin + 1)
-        res *= (xMax - xMin + 1)
-        res *= (sMax - sMin + 1)
-        println("after line s = $sMax, m = $mMax, a = $aMax, x = $xMax")
-        println("after line s = $sMin, m = $mMin, a = $aMin, x = $xMin")
-        println("res = $res")
-        tot += res
+        ranges.values.map { r -> r.max - r.min + 1L }.reduce { f, s -> f * s }
     }
-    tot.log("tot")
-    return tot
-    //256000000000000
-    //167409079868000
 }
 
-val glob = mutableListOf<List<Pair<Boolean, Op>>>()
+fun processP2(workflows: List<Workflow>): MutableList<List<Pair<Boolean, Rule>>> {
+    val foundRules = mutableListOf<List<Pair<Boolean, Rule>>>()
 
+    fun process(currIdx: String, rules: List<Workflow>, currentRules: MutableList<Pair<Boolean, Rule>>) {
 
-fun pp2(currIdx: String, rules: List<Rule>, currVal: List<Pair<Boolean, Op>>) {
-
-    currIdx.log("process for $currIdx")
-    val rtp = rules.first { r -> r.rn == currIdx }
-    val add = currVal.toMutableList()
-    for ((index, op) in rtp.ops.withIndex()) {
-        val (name, opc, cv, ift) = op
-        if (ift == "R") {
-        } else if (ift == "A") {
-            val cp = add.toMutableList()// rocess something
-            cp.add(true to op)
-            glob.add(cp)
-        } else {
-            val cp = add.toMutableList()// rocess something
-            cp.add(true to op)
-            pp2(ift, rules, cp)
+        val currentWorkflow = rules.first { r -> r.name == currIdx }
+        for (rule in currentWorkflow.rules) {
+            if (rule.ifTrue == "A") {
+                val newList = currentRules.toMutableList()
+                newList.add(true to rule)
+                foundRules.add(newList)
+            } else if (rule.ifTrue != "R") {
+                val newList = currentRules.toMutableList()
+                newList.add(true to rule)
+                process(rule.ifTrue, rules, newList)
+            }
+            currentRules.add(false to rule)
         }
-        add.add(false to op)
+        if (currentWorkflow.noMatch == "A") {
+            foundRules.add(currentRules)
+        } else if (currentWorkflow.noMatch != "R") { //can process something
+            process(currentWorkflow.noMatch, rules, currentRules)
+        }
     }
-    if (rtp.alt == "R") {
-    } else if (rtp.alt == "A") {
-        glob.add(add)
-    } else { //can process something
-        pp2(rtp.alt, rules, add)
-    }
+
+    process("in", workflows, mutableListOf())
+    return foundRules
+
 }
 
-fun part1(input: List<String>): Int {
 
-    val splitOnEmpty = input.splitOnEmpty()
-    val rules = splitOnEmpty[0]
-    val values = splitOnEmpty[1]
-    val allRules = mutableListOf<Rule>()
-    rules.forEach {
-        it.log()
+fun parseWorkflows(list: List<String>): List<Workflow> {
+
+    fun parseRule(ruleStr: String): Rule {
+        val cat = ruleStr.first()
+        val op = ruleStr[1]
+        val afterOp = ruleStr.drop(2)
+        val split = afterOp.split(":")
+        val valueInt = split[0].toInt()
+        val noMatch = split[1]
+        return Rule(cat, op, valueInt, noMatch)
+    }
+
+    return list.map {
         val wfName = it.takeWhile { x -> x != '{' }
-        wfName.log("name")
         val conditions = it.takeLastWhile { x -> x != '{' }.dropLast(1)
-        val split = conditions.split(",")
-
-        val opList = mutableListOf<Op>()
-        var alt = ""
-        for ((index, s) in split.withIndex()) {
-            if (index != split.lastIndex) {
-                val parseCond = parseCond(s)
-                opList.add(parseCond)
-                parseCond.log("condition parsed")
-            } else {
-                alt = s
-            }
-        }
-        val newRule = Rule(wfName, opList, alt)
-        allRules.add(newRule)
-        newRule.log("new rule!!!!")
+        val rulesString = conditions.split(",")
+        val parsedRules = rulesString.dropLast(1).map { ruleString -> parseRule(ruleString) }
+        Workflow(wfName, parsedRules, rulesString.last())
     }
-    val allValues = mutableListOf<Map<Char, Int>>()
-    values.forEach { it ->
+}
+
+fun parseValues(list: List<String>): List<Map<Char, Int>> {
+    return list.map { it ->
         val noPar = it.dropLast(1).drop(1)
-        var pairs = mutableListOf<Pair<Char, Int>>()
-        val map = noPar.split(",").map { single ->
+        val map = noPar.split(",").associate { single ->
             val split = single.split("=")
-            val cV = split[0][0]
-            val vInt = split[1].toInt()
-            (cV to vInt)
-        }.toMap()
-        allValues.add(map)
-    }
-
-    allValues.forEach { it.log("vvp") }
-
-    var result = 0
-    allValues.forEach {
-        "will process".log()
-        val answer = process("in", allRules, it)
-        answer.log("answer")
-        if (answer == "A") {
-            result += it.values.sum()
+            split[0][0] to split[1].toInt()
         }
+        map
     }
-    result.log("res")
-    return result
 }
 
 
-fun process(currIdx: String, rules: List<Rule>, values: Map<Char, Int>): String {
-
-    currIdx.log("process for $currIdx")
-    val rtp = rules.first { r -> r.rn == currIdx }
-    for ((index, op) in rtp.ops.withIndex()) {
-        val (name, op, cv, ift) = op
-        if (op == '<') {
-            if (values[name[0]]!! < cv) {
-                if (ift in "AR") {
-                    return ift
-                } else {
-                    return process(ift, rules, values)
-                }
-            } else {
-                if (index != rtp.ops.lastIndex) {
-                    continue
-                } else {
-                    if (rtp.alt in "AR") {
-                        return rtp.alt
-                    } else {
-                        return process(rtp.alt, rules, values)
-                    }
-
-                }
-            }
-        } else { // >
-            if (values[name[0]]!! > cv) {
-                if (ift in "AR") {
-                    return ift
-                } else {
-                    return process(ift, rules, values)
-                }
-            } else {
-                if (index != rtp.ops.lastIndex) {
-                    continue
-                } else {
-                    if (rtp.alt in "AR") {
-                        return rtp.alt
-                    } else {
-                        return process(rtp.alt, rules, values)
-                    }
-                }
-            }
-        }
-    }
-    fail("err1")
-    return rtp.alt
-}
-
-
-fun parseCond(cond: String): Op {
-    val s = cond.takeWhile { x -> (x != '<' && x != '>') }
-    val op = cond.first { x -> x == '<' || x == '>' }
-    val s2 = cond.takeLastWhile { x -> (x != '<' && x != '>') }
-    val op2 = s2.split(":")
-    val valueToCond = op2[0].toInt()
-    val altern = op2[1]
-
-    return Op(s, op, valueToCond, altern)
-}
-
-data class Op(val name: String, val op: Char, val cv: Int, val ift: String)
-data class Rule(var rn: String, var ops: MutableList<Op>, var alt: String)
-
-private fun <T> T.log(): T = also { println("%s".format(this)) }
-private fun <T> T.log(comment: String): T = also { println("%s: %s".format(comment, this)) }
+data class Rule(val cat: Char, val op: Char, val intVal: Int, val ifTrue: String)
+data class Workflow(var name: String, var rules: List<Rule>, var noMatch: String)
 
 
 
