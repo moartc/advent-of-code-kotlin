@@ -5,311 +5,199 @@ import java.util.*
 
 fun main() {
 
-    val inputLine =
-        Resources.getLines(2023, 20)
-//        Resources.getLinesExample(2023, 20)
-//    println("part1 = ${part1(inputLine)}")
+    val inputLine = Resources.getLines(2023, 20)
+    println("part1 = ${part1(inputLine)}")
     println("part2 = ${part2(inputLine)}")
 }
 
-val queueToSend: Queue<String> = LinkedList<String>()
-val brc = Brc(mutableListOf())
-val modulesMap = mutableMapOf<String, M>()
-
-fun part2(input: List<String>): Int {
-
-    input.forEach {
-        it.log()
-
+fun parseInput(input: List<String>): Map<String, M> {
+    return input.associate {
         val split = it.split(" -> ")
         val sender = split[0].trim()
-        val connections = split[1]!!.split(",").map { it.trim() }
+        val connections = split[1].split(",").map { it.trim() }
 
-        if(sender == "broadcaster") {
-            brc.modules = connections.toMutableList()
+        if (sender == "broadcaster") {
+            val broadcasterM = BroadcasterM(connections)
+            broadcasterM.name to broadcasterM
+        } else if (sender[0] == '%') {
+            val drop = sender.drop(1)
+            val ffm = FlipFlopM(drop, false, LinkedList(), connections.toMutableList())
+            drop to ffm
+        } else if (sender[0] == '&') {
+            val drop = sender.drop(1)
+            val cm = ConjunctionM(drop, mutableMapOf(), connections.toMutableList())
+            drop to cm
         } else {
-            if(sender[0] == '%') {
-                val drop = sender.drop(1)
-                val cm = FFM(drop, false, LinkedList(), connections.toMutableList())
-                modulesMap[drop] =  cm
-            } else if(sender[0] == '&') {
-                val drop = sender.drop(1)
-                val cm = CM(drop, mutableMapOf(), connections.toMutableList())
-                modulesMap[drop] =  cm
-            } else {
-                error("unknown sender")
-            }
+            error("unknown sender")
         }
-        val q = 12
     }
+}
 
-    // update map for CM
+fun allModulesThatSendTo(s: String, modulesMap: Map<String, M>): List<String> =
+    modulesMap.values.filter { m -> m.modules.contains(s) }.map { m -> m.name }
 
-    val filter = modulesMap.values.filter { c -> c is CM }.map { it as CM }
+fun initializeMemory(modulesMap: Map<String, M>) {
 
-    fun allThatSentTo(s : String): List<String> {
-        return modulesMap.values.filter { m ->
-            m is CM && m.modules.contains(s) || m is FFM && m.modules.contains(s)
-        }.map { m -> if(m is CM) m.name else if (m is FFM) m.name else "" }
-    }
-
-    filter.forEach { cm ->
-        val allThatSend = allThatSentTo(cm.name)
+    // initialize memory for all senders
+    modulesMap.values.filterIsInstance<ConjunctionM>().forEach { cm ->
+        val allThatSend = allModulesThatSendTo(cm.name, modulesMap)
         allThatSend.forEach {
             cm.rememberHigh[it] = false
-
         }
-
     }
-    var btPres = 0L
+}
 
+fun part1(input: List<String>): Int {
+    val queueToSend: Queue<String> = LinkedList()
+    val modulesMap = parseInput(input)
+    initializeMemory(modulesMap)
+    var highSent = 0
+    var lowSent = 0
 
     fun pushOnce() {
-
-        brc.modules.forEach {
+        modulesMap["broadcaster"]!!.modules.forEach {
             lowSent++
             modulesMap[it]!!.receive("broadcaster", false)
             queueToSend.add(it)
         }
-        while(!queueToSend.isEmpty()) {
+        while (!queueToSend.isEmpty()) {
             val poll = queueToSend.poll()!!
             val currentSender = modulesMap[poll]
-            if(currentSender is CM) {
-                val toSend = currentSender.send()
-                currentSender.modules.forEach {
-//                    println("checking FFF ${currentSender.name} if can send to ${it}")
-
-                    val currentReceiver = modulesMap[it]
-                    if(toSend == true) highSent++ else lowSent++
-
-                    if(it == "rx" && toSend != null && toSend == false) {
-                        btPres.log("button pressed")
-                        return
-                    }
-                    if(currentReceiver == null) {
-//                        println(">>>>>>>>>>> ${currentSender.name} send ${toSend} to output")
-                    } else {
-
-                        if(toSend != null) {
-//                            println(">>>>>>>>>>> ${currentSender.name} send ${toSend} to ${it}")
-
-
-                            currentReceiver.receive(currentSender.name, toSend)
-                            queueToSend.add(it)
-                        }
-                    }
-
-                }
-            } else if(currentSender is FFM) {
-                val toSend = currentSender.send()
-
-                currentSender.modules.forEach {
-
-//                    println("checking FFF ${currentSender.name} if can send to ${it}")
-                    val currentReceiver = modulesMap[it]!!
-                    if(it == "rx" && toSend != null && toSend == false) {
-                        btPres.log("button pressed")
-                        return
-                    }
-                    if(toSend != null) {
-                        if(toSend) highSent++ else lowSent++
-//                        println(">>>>>>>>>>> ${currentSender.name} send ${toSend} to ${it}")
-                        if(it == "rx" && !toSend) {
-                            btPres.log("button pressed")
-                            return
-                        }
-                        currentReceiver.receive(currentSender.name, toSend!!)
+            val toSend = currentSender!!.send()
+            currentSender.modules.forEach {
+                val currentReceiver = modulesMap[it]
+                if (toSend != null) {
+                    if (toSend == true) highSent++ else lowSent++
+                    if (currentReceiver != null) {
+                        currentReceiver.receive(currentSender.name, toSend)
                         queueToSend.add(it)
                     }
                 }
             }
         }
     }
-
-    while(true){
-        btPres++
-        btPres.log("button pressed")
+    repeat(1000) {
+        lowSent++
         pushOnce()
     }
-
-
-    lowSent.log("low sent")
-    highSent.log("high sent")
-
-    val res = lowSent * highSent
-    res.log("res")
-    return 12
+    return lowSent * highSent
 }
 
-//fun part1(input: List<String>): Int {
-//
-//    input.forEach {
-//        it.log()
-//
-//        val split = it.split(" -> ")
-//        val sender = split[0].trim()
-//        val connections = split[1]!!.split(",").map { it.trim() }
-//
-//        if(sender == "broadcaster") {
-//            brc.modules = connections.toMutableList()
-//        } else {
-//            if(sender[0] == '%') {
-//                val drop = sender.drop(1)
-//                val cm = FFM(drop, false, LinkedList(), connections.toMutableList())
-//                modulesMap[drop] =  cm
-//            } else if(sender[0] == '&') {
-//                val drop = sender.drop(1)
-//                val cm = CM(drop, mutableMapOf(), connections.toMutableList())
-//                modulesMap[drop] =  cm
-//            } else {
-//                error("unknown sender")
-//            }
-//        }
-//        val q = 12
-//    }
-//
-//    // update map for CM
-//
-//    val filter = modulesMap.values.filter { c -> c is CM }.map { it as CM }
-//
-//    fun allThatSentTo(s : String): List<String> {
-//        return modulesMap.values.filter { m ->
-//            m is CM && m.modules.contains(s) || m is FFM && m.modules.contains(s)
-//        }.map { m -> if(m is CM) m.name else if (m is FFM) m.name else "" }
-//    }
-//
-//    filter.forEach { cm ->
-//        val allThatSend = allThatSentTo(cm.name)
-//        allThatSend.forEach {
-//            cm.rememberHigh[it] = false
-//
-//        }
-//
-//    }
-//
-//
-//    fun pushOnce() {
-//
-//        brc.modules.forEach {
-//            lowSent++
-//            modulesMap[it]!!.receive("broadcaster", false)
-//            queueToSend.add(it)
-//        }
-//        while(!queueToSend.isEmpty()) {
-//            val poll = queueToSend.poll()!!
-//            val currentSender = modulesMap[poll]
-//            if(currentSender is CM) {
-//                val toSend = currentSender.send()
-//                currentSender.modules.forEach {
-////                    println("checking FFF ${currentSender.name} if can send to ${it}")
-//
-//                    val currentReceiver = modulesMap[it]
-//                    if(toSend == true) highSent++ else lowSent++
-//
-//                    if(currentReceiver == null) {
-//                        println(">>>>>>>>>>> ${currentSender.name} send ${toSend} to output")
-//                    } else {
-//                        if(toSend != null) {
-//                            println(">>>>>>>>>>> ${currentSender.name} send ${toSend} to ${it}")
-//
-//
-//                            currentReceiver.receive(currentSender.name, toSend)
-//                            queueToSend.add(it)
-//                        }
-//                    }
-//
-//                }
-//            } else if(currentSender is FFM) {
-//                val toSend = currentSender.send()
-//
-//                currentSender.modules.forEach {
-//
-////                    println("checking FFF ${currentSender.name} if can send to ${it}")
-//                    val currentReceiver = modulesMap[it]!!
-//                    if(toSend != null) {
-//                        if(toSend) highSent++ else lowSent++
-//                        println(">>>>>>>>>>> ${currentSender.name} send ${toSend} to ${it}")
-//                        currentReceiver.receive(currentSender.name, toSend!!)
-//                        queueToSend.add(it)
-//                    }
-//                }
-//            }
-//        }
-//    }
-//
-//    repeat(1000){
-//        pushOnce()
-//        lowSent++ // for a button
-//
-//    }
-//
-//
-//    lowSent.log("low sent")
-//    highSent.log("high sent")
-//
-//    val res = lowSent * highSent
-//    res.log("res")
-//    return 12
-//}
+// It may not work for other data. It assumes that the final module is 'rx' which receives the signal
+// from one Conjunction module.
+fun part2(input: List<String>): Long {
+    val queueToSend: Queue<String> = LinkedList()
+    val modulesMap = parseInput(input)
+    initializeMemory(modulesMap)
+    var highSent = 0
+    var lowSent = 0
+    var btnPressCounter = 0L
+    val senderToRx = allModulesThatSendTo("rx", modulesMap)[0]
+    val allThatSentTo = allModulesThatSendTo(senderToRx, modulesMap).associateWith { 0L }.toMutableMap()
 
-var highSent = 0
-var lowSent = 0
+    fun pushOnce(): Long {
+
+        modulesMap["broadcaster"]!!.modules.forEach {
+            lowSent++
+            modulesMap[it]!!.receive("broadcaster", false)
+            queueToSend.add(it)
+        }
+        while (!queueToSend.isEmpty()) {
+            val poll = queueToSend.poll()!!
+            val currentSender = modulesMap[poll]
+            val toSend = currentSender!!.send()
+            currentSender.modules.forEach { it ->
+                val currentReceiver = modulesMap[it]
+                if (toSend != null) {
+                    if (toSend) highSent++ else lowSent++
+                    if (currentReceiver != null) {
+                        if (allThatSentTo.contains(it) && !toSend) {
+                            if (allThatSentTo[it]!! == 0L) { // update cycle
+                                allThatSentTo[it] = btnPressCounter
+                                // check after the update whether all cycles have been found
+                                if (allThatSentTo.values.all { it != 0L }) {
+                                    return allThatSentTo.values.reduce { f, s -> f * s }
+                                }
+                            }
+                        }
+                        currentReceiver.receive(currentSender.name, toSend)
+                        queueToSend.add(it)
+                    }
+                }
+            }
+        }
+        return 0L
+    }
+
+    var result: Long
+    do {
+        btnPressCounter++
+        result = pushOnce()
+    } while (result == 0L)
+    return result
+}
+
 
 interface M {
-    fun receive(from : String, high: Boolean)
-    fun send() : Boolean?
+
+    val name: String
+    val modules: List<String>
+    fun receive(from: String, isHigh: Boolean)
+    fun send(): Boolean?
 }
 
-class Brc(var modules: MutableList<String>) { // single low to all
+class BroadcasterM(override val modules: List<String>) : M {
 
-}
-class CM(var name: String, var rememberHigh: MutableMap<String, Boolean>, var modules: MutableList<String>) : M{
-    constructor() : this("", mutableMapOf(), mutableListOf()) {
+    override val name: String = "broadcaster"
+    override fun receive(from: String, isHigh: Boolean) {
+        // deliberately empty
     }
-    override fun receive(from : String, high: Boolean) {
-//        println("$name received ${high} from $from")
-        rememberHigh[from] = high
-//        rememberHigh.log("update for $name to")
+
+    override fun send(): Boolean {
+        return false
+    }
+
+}
+
+class ConjunctionM(
+    override val name: String,
+    var rememberHigh: MutableMap<String, Boolean>,
+    override val modules: MutableList<String>
+) : M {
+
+    override fun receive(from: String, isHigh: Boolean) {
+        rememberHigh[from] = isHigh
+    }
+
+    override fun send(): Boolean {
+        return !rememberHigh.all { x -> x.value }
+    }
+
+}
+
+class FlipFlopM(
+    override val name: String,
+    private var isSwitchOn: Boolean = false,
+    private var isLastReceivedHigh: Queue<Boolean>,
+    override val modules: MutableList<String>
+) : M {
+
+    override fun receive(from: String, isHigh: Boolean) {
+        isLastReceivedHigh.add(isHigh)
+        if (!isHigh) {
+            this.isSwitchOn = !this.isSwitchOn
+        }
     }
 
     override fun send(): Boolean? {
-        if(rememberHigh.all { x -> x.value == true } ) { // if remember high for all
-//            println("$name send low")
-            return false // return low
+        val poll = isLastReceivedHigh.poll()
+        return if (poll == false) {
+            isSwitchOn
         } else {
-//            println("$name send high")
-            return true // return high
+            null
         }
     }
-
 }
-class FFM(var name: String, var switchOn: Boolean = false, var lastRecHigh : Queue<Boolean>, var modules: MutableList<String>) : M{
-
-    override fun receive(from : String, high: Boolean) { // switch when receive low
-        lastRecHigh.add(high)
-        if(high) {
-//            println("$name received high, don't switch")
-        } else {
-//            println("$name received low switches to ${!this.switchOn}")
-            this.switchOn = !this.switchOn
-        }
-    }
-
-    override fun send(): Boolean? {
-        val poll = lastRecHigh.poll()
-        if(poll == false) {
-            return switchOn
-        } else {
-//            println("$name send null")
-            return null
-        }
-    }
-
-
-}
-
-private fun <T> T.log(): T = also { println("%s".format(this)) }
-private fun <T> T.log(comment: String): T = also { println("%s: %s".format(comment, this)) }
 
 
 
