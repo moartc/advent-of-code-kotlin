@@ -2,33 +2,29 @@
 
 package solutions.aoc2023.day23
 
+import solutions.aoc2022.day22.nextPos
 import utils.Resources
 import utils.algorithms.withoutDiagonal
+import utils.array.extensions.deepCopy
 import utils.parser.getInts
 
 fun main() {
 
     val inputLine =
-//        Resources.getLines(2023, 23)
-        Resources.getLinesExample(2023, 23)
+        Resources.getLines(2023, 23)
+//        Resources.getLinesExample(2023, 23)
 //    println("part1 = ${part1(inputLine)}")
     println("part2 = ${part2(inputLine)}")
 }
 
-fun part2(input: List<String>): Long {
+fun part2(input: List<String>): Int {
 
 
     val map = input.map { it.toList() }.toList()
 
-    val longestVisitedTime
-
-
     fun can23(currentPos: Pair<Int, Int>, nextPos: Pair<Int, Int>): Boolean {
         val nextChar = map[nextPos.first][nextPos.second]
-        val currChar = map[currentPos.first][currentPos.second]
-        val (cy, cx) = currentPos
-        val (ny, nx) = nextPos
-        if  (nextChar in ".^v<>") {
+        if (nextChar in ".^v<>") {
             return true
         } else {
             return false
@@ -36,7 +32,7 @@ fun part2(input: List<String>): Long {
     }
 
 
-    var bestFound : Int= 0
+    var bestFound: Int = 0
 
 
     tailrec fun <T> bfs23(
@@ -47,7 +43,7 @@ fun part2(input: List<String>): Long {
         canVisit: (currentPos: Pair<Int, Int>, nextPos: Pair<Int, Int>) -> Boolean,
         visited: Array<BooleanArray>,
         step: Int,
-    ): Int {
+    ) {
 
 
         val sizeY = grid.size - 1
@@ -56,14 +52,7 @@ fun part2(input: List<String>): Long {
         fun isPosValid(nextPos: Pair<Int, Int>): Boolean {
             return !(nextPos.first < 0 || nextPos.first > sizeY || nextPos.second < 0 || nextPos.second > sizeX)
         }
-        visited[current.first][current.second]=true
-
-        if (longestVisitedTime[current.first][current.second] < step) {
-            longestVisitedTime[current.first][current.second] = step
-        } else {
-            return -1
-        }
-
+        visited[current.first][current.second] = true
 
         val toVisit = mutableListOf<Pair<Int, Int>>()
 
@@ -72,35 +61,33 @@ fun part2(input: List<String>): Long {
             val nextX = current.second + move.second
             val nextPos = nextY to nextX
             if (isPosValid(nextPos) && canVisit(current, nextPos)
-                && !visited[nextY][nextX] && longestVisitedTime[nextY][nextX] < step+1
+                && !visited[nextY][nextX]
             ) {
                 if (nextY to nextX == end) {
-                    step.log("found")
                     if (step > bestFound) {
-                        step.log("foundbb")
                         bestFound = step
                         step.log("found best:")
+                    } else {
+                        step.log("worse, best still $bestFound")
                     }
                 } else {
                     toVisit.add(nextY to nextX)
                 }
             }
         }
-        val best  = if (toVisit.size == 1) {
+        if (toVisit.size == 1) {
             bfs23(map, withoutDiagonal, toVisit[0], end, ::can23, visited, (step + 1))
-        } else if(toVisit.size > 0) {
-            toVisit.maxOf { tv ->
-                bfs23(map, withoutDiagonal, tv, end, ::can23, visited.clone(), (step + 1))
+        } else if (toVisit.size > 1) {
+            toVisit.forEach { tv ->
+                bfs23(map, withoutDiagonal, tv, end, ::can23, visited.deepCopy(), (step + 1))
             }
-        } else {
-            -1
         }
-        return best
     }
 
 
     val end = map.lastIndex to map[map.lastIndex].lastIndex - 1
-    val bfs23 = bfs23(map, withoutDiagonal, 0 to 1, end, ::can23, Array(map.size) { BooleanArray(map[0].size) }, 1)
+    val bfs23 =
+        bfs23(map, withoutDiagonal, 0 to 1, end, ::can23, Array(map.size) { BooleanArray(map[0].size) { false } }, 1)
 
 
 
@@ -109,7 +96,7 @@ fun part2(input: List<String>): Long {
 
     val q = 12
 
-    return 12L
+    return bestFound
 }
 
 fun part1(input: List<String>): Long {
