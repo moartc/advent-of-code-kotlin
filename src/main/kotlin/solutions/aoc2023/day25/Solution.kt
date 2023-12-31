@@ -10,19 +10,14 @@ import utils.Resources
 fun main() {
 
     val inputLine = Resources.getLines(2023, 25)
-//        Resources.getLinesExample(2023, 25)
-
     println("part1 = ${part1(inputLine)}")
-
 }
 
 fun part1(input: List<String>): Int {
 
-
     val graph: Graph<String, DefaultEdge> = SimpleGraph(DefaultEdge::class.java)
 
     input.forEach {
-
         val split = it.split(": ")
         val left = split[0]
         val rightSplit = split[1].split(" ").toMutableList()
