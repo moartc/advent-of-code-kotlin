@@ -8,36 +8,27 @@ import kotlin.math.absoluteValue
 fun main() {
 
     val inputLines = Resources.getLines(2024, 2)
-
     println("part1 = ${part1(inputLines)}")
     println("part2 = ${part2(inputLines)}")
 }
 
-
-fun part2(inputLines: List<String>): Int {
-
-    var safe = 0
-    ex@ for (s in inputLines) {
-        val ints = s.getInts()
-
-        for ((idx, _) in ints.withIndex()) {
-            val removed = ints.toMutableList()
-            removed.removeAt(idx)
-            if (isCorrect(removed)) {
-                safe++
-                continue@ex
-            }
-        }
-    }
-    return safe
-}
-
 fun part1(inputLines: List<String>): Int {
 
+    fun isCorrect(list: List<Int>): Boolean {
+        val differences = list.zipWithNext().map { (a, b) -> b - a }
+        return (differences.all { it < 0 } || differences.all { it > 0 }) && differences.all { it.absoluteValue in 1..3 }
+    }
     return inputLines.count { isCorrect(it.getInts()) }
 }
 
-fun isCorrect(list: List<Int>): Boolean {
-    val differences = list.zipWithNext().map { (a, b) -> b - a }
-    return (differences.all { it < 0 } || differences.all { it > 0 }) && differences.all { it.absoluteValue in 1..3 }
+fun part2(inputLines: List<String>): Int {
+
+    fun isCorrectPart2(list: List<Int>, toSkip: Int): Boolean {
+        val differences = list.filterIndexed { index, _ -> index != toSkip }.zipWithNext().map { (a, b) -> b - a }
+        return (differences.all { it < 0 } || differences.all { it > 0 }) && differences.all { it.absoluteValue in 1..3 }
+    }
+    return inputLines.count {
+        val ints = it.getInts()
+        ints.withIndex().any { (index, _) -> isCorrectPart2(ints, index) }
+    }
 }
