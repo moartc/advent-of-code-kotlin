@@ -18,3 +18,9 @@ fun <T> List<List<T>>.transpose(): List<List<T>> {
     forEach { list -> result.zip(list).forEach { it.first.add(it.second) } }
     return result
 }
+
+fun List<String>.findPosition(char: Char): Pair<Int, Int> {
+    return this.mapIndexedNotNull { y, str ->
+        str.indexOf(char).takeIf { it != -1 }?.let { y to it }
+    }.first()
+}

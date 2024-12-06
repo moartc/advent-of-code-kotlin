@@ -34,6 +34,15 @@ enum class Direction(val y: Int, val x: Int) {
         }
     }
 
+    fun turnCounterClockwise(): Direction {
+        return when (this) {
+            NORTH -> WEST
+            EAST -> NORTH
+            SOUTH -> EAST
+            WEST -> SOUTH
+        }
+    }
+
     fun isOpposite(dir: Direction): Boolean {
         return when (dir) {
             NORTH -> this == SOUTH
