@@ -31,3 +31,7 @@ fun List<String>.findAllPositions(char: Char): List<Pair<Int, Int>> = this.flatM
         if (value == char) Pair(y, x) else null
     }
 }
+
+fun <T> List<T>.toFrequencyMap(): MutableMap<T, Long> {
+    return this.groupingBy { it }.fold(0L) { acc, _ -> acc + 1 }.toMutableMap()
+}
