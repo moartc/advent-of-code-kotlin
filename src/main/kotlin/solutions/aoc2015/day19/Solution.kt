@@ -31,16 +31,16 @@ fun findAnswer(molecule: String, replacements: List<Pair<String, String>>, count
     }
 }
 
-fun replace(molecule: String, replacement: Pair<String, String>) =
+private fun replace(molecule: String, replacement: Pair<String, String>) =
     molecule.indicesOf(replacement.first)
         .map { idx -> molecule.replaceRange(idx, idx + replacement.first.length, replacement.second) }
 
-fun getReplacements(input: List<String>) =
+private  fun getReplacements(input: List<String>) =
     input.subList(0, input.size - 2).map { rep -> rep.split(" => ") }.map { split -> split[0] to split[1] }
 
-fun getMolecule(input: List<String>) = input.last()
+private fun getMolecule(input: List<String>) = input.last()
 
-fun String.indicesOf(toFind: String): List<Int> = toFind.toRegex().findAll(this).map { it.range.first }.toList()
+private fun String.indicesOf(toFind: String): List<Int> = toFind.toRegex().findAll(this).map { it.range.first }.toList()
 
 /*
 It doesn't always find the solution to part 2. If found, then it prints to the console.

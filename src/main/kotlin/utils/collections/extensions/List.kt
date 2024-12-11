@@ -1,5 +1,6 @@
 package utils.collections.extensions
 
+
 fun <T> List<List<T>>.deepCopyMutable(): MutableList<MutableList<T>> = this.map { it.toMutableList() }.toMutableList()
 fun <T> List<List<T>>.deepCopyImmutable(): List<List<T>> = this.map { it.toList() }.toList()
 
@@ -23,4 +24,10 @@ fun List<String>.findPosition(char: Char): Pair<Int, Int> {
     return this.mapIndexedNotNull { y, str ->
         str.indexOf(char).takeIf { it != -1 }?.let { y to it }
     }.first()
+}
+
+fun List<String>.findAllPositions(char: Char): List<Pair<Int, Int>> = this.flatMapIndexed { y, row ->
+    row.mapIndexedNotNull { x, value ->
+        if (value == char) Pair(y, x) else null
+    }
 }
