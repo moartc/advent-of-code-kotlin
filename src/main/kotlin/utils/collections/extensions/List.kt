@@ -35,3 +35,12 @@ fun List<String>.findAllPositions(char: Char): List<Pair<Int, Int>> = this.flatM
 fun <T> List<T>.toFrequencyMap(): MutableMap<T, Long> {
     return this.groupingBy { it }.fold(0L) { acc, _ -> acc + 1 }.toMutableMap()
 }
+
+fun <T> List<T>.containsSublist(sublist: List<T>): Boolean {
+    for (i in 0..this.size - sublist.size) {
+        if (this.slice(i until i + sublist.size) == sublist) {
+            return true
+        }
+    }
+    return false
+}
