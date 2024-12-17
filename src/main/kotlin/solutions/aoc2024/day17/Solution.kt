@@ -2,7 +2,6 @@ package solutions.aoc2024.day17
 
 import utils.Resources
 import utils.parser.getInts
-import java.math.BigInteger
 
 val day = (object {}).javaClass.packageName.takeLast(2).toInt()
 
@@ -116,26 +115,25 @@ fun part1(inputLines: List<String>): String {
  * exp value=0 for index=15, for A=190384113204239, oct = 5322350134036017
  *
  */
-fun part2(inputLines: List<String>): BigInteger {
+fun part2(inputLines: List<String>): Long {
 
     val program = inputLines[4].getInts()
     val printed = BooleanArray(program.size) { false }
 
     val suf = "0134036017"
 
-    num@ for (i in 1L..Long.MAX_VALUE) {
+    num@ for (i in (1..Long.MAX_VALUE)) {
 
         val toString = i.toString(8)
         val octalString = "$toString$suf"
-        val aAtTheBeginning = BigInteger(octalString, 8)
-
-        var a = BigInteger(octalString, 8)
-        var b = BigInteger.ZERO
-        var c = BigInteger.ZERO
+        val aAtTheBeginning = octalString.toLong(8)
+        var a = octalString.toLong(8)
+        var b = 0L
+        var c = 0L
         val output = mutableListOf<Int>()
 
-        fun combo(op: Int): BigInteger = when (op) {
-            in 0..3 -> op.toBigInteger()
+        fun combo(op: Int): Long = when (op) {
+            in 0..3 -> op.toLong()
             4 -> a
             5 -> b
             6 -> c
@@ -151,20 +149,20 @@ fun part2(inputLines: List<String>): BigInteger {
 
             when (opcode) {
                 0 -> {
-                    val denominator = BigInteger.ONE.shiftLeft(combo(op).toInt())
+                    val denominator = 1 shl combo(op).toInt()
                     a /= denominator
                 }
 
                 1 -> {
-                    b = b.xor(op.toBigInteger())
+                    b = b.xor(op.toLong())
                 }
 
                 2 -> {
-                    b = combo(op) % BigInteger.valueOf(8)
+                    b = combo(op) % 8
                 }
 
                 3 -> {
-                    if (a != BigInteger.ZERO) {
+                    if (a != 0L) {
                         ptr = op
                     }
                 }
@@ -174,7 +172,7 @@ fun part2(inputLines: List<String>): BigInteger {
                 }
 
                 5 -> {
-                    val outResult = (combo(op) % BigInteger.valueOf(8)).toInt()
+                    val outResult = (combo(op) % 8).toInt()
                     output.add(outResult)
                     if (program[outIdx] == outResult) {
                         if (!printed[outIdx]) {
@@ -193,17 +191,17 @@ fun part2(inputLines: List<String>): BigInteger {
                 }
 
                 6 -> {
-                    val denominator = BigInteger.ONE.shiftLeft(combo(op).toInt())
+                    val denominator = 1 shl combo(op).toInt()
                     b = a / denominator
                 }
 
                 7 -> {
-                    val denominator = BigInteger.ONE.shiftLeft(combo(op).toInt())
+                    val denominator = 1 shl combo(op).toInt()
                     c = a / denominator
                 }
             }
         }
     }
 
-    return BigInteger.ZERO
+    return -1L // shouldn't happen
 }
