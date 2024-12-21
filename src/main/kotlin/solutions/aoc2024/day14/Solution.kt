@@ -3,7 +3,7 @@ package solutions.aoc2024.day14
 import utils.Resources
 import utils.collections.extensions.containsSublist
 import utils.parser.getLongs
-import utils.printGridFromPoints
+import utils.grid.printGridFromPoints
 
 val day = (object {}).javaClass.packageName.takeLast(2).toInt()
 

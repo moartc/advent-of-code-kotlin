@@ -1,6 +1,6 @@
 package solutions.aoc2024.day16
 
-import utils.Direction
+import utils.grid.Direction
 import utils.Resources
 import utils.algorithms.dijkstraGenWithPathHistory
 import utils.collections.extensions.findPosition

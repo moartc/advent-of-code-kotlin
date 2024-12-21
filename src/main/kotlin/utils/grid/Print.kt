@@ -1,4 +1,4 @@
-package utils
+package utils.grid
 
 fun printGridFromPoints(points: List<Pair<Int, Int>>) {
     val maxX = points.maxOfOrNull { it.first } ?: 0

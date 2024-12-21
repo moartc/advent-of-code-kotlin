@@ -1,6 +1,6 @@
 package solutions.aoc2023.day17
 
-import utils.Direction
+import utils.grid.Direction
 import utils.Resources
 import utils.algorithms.dijkstraGen
 

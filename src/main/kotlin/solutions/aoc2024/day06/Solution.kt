@@ -1,6 +1,6 @@
 package solutions.aoc2024.day06
 
-import utils.Direction
+import utils.grid.Direction
 import utils.Resources
 import utils.collections.extensions.findPosition
 
