@@ -1,6 +1,6 @@
 package utils.grid
 
-fun printGridFromPoints(points: List<Pair<Int, Int>>) {
+fun printGridFromPairs(points: List<Pair<Int, Int>>) {
     val maxX = points.maxOfOrNull { it.first } ?: 0
     val maxY = points.maxOfOrNull { it.second } ?: 0
     val minX = points.minOfOrNull { it.first } ?: 0
@@ -20,4 +20,7 @@ fun printGridFromPoints(points: List<Pair<Int, Int>>) {
     grid.forEach { row ->
         println(row.joinToString(" "))
     }
+
+    // todo the same method as above but for  points
 }
+

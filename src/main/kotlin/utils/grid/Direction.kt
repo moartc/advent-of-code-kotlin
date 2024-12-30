@@ -11,44 +11,44 @@ package utils.grid
 enum class Direction(val y: Int, val x: Int) {
 
 
-    NORTH(-1, 0),
-    EAST(0, 1),
-    SOUTH(1, 0),
-    WEST(0, -1);
+    UP(-1, 0),
+    RIGHT(0, 1),
+    DOWN(1, 0),
+    LEFT(0, -1);
 
     fun getOpposite(): Direction {
         return when (this) {
-            NORTH -> SOUTH
-            EAST -> WEST
-            SOUTH -> NORTH
-            WEST -> EAST
+            UP -> DOWN
+            RIGHT -> LEFT
+            DOWN -> UP
+            LEFT -> RIGHT
         }
     }
 
     fun turnClockwise(): Direction {
         return when (this) {
-            NORTH -> EAST
-            EAST -> SOUTH
-            SOUTH -> WEST
-            WEST -> NORTH
+            UP -> RIGHT
+            RIGHT -> DOWN
+            DOWN -> LEFT
+            LEFT -> UP
         }
     }
 
     fun turnCounterClockwise(): Direction {
         return when (this) {
-            NORTH -> WEST
-            EAST -> NORTH
-            SOUTH -> EAST
-            WEST -> SOUTH
+            UP -> LEFT
+            RIGHT -> UP
+            DOWN -> RIGHT
+            LEFT -> DOWN
         }
     }
 
     fun isOpposite(dir: Direction): Boolean {
         return when (dir) {
-            NORTH -> this == SOUTH
-            EAST -> this == WEST
-            SOUTH -> this == NORTH
-            WEST -> this == EAST
+            UP -> this == DOWN
+            RIGHT -> this == LEFT
+            DOWN -> this == UP
+            LEFT -> this == RIGHT
         }
     }
 }

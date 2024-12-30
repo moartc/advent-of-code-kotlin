@@ -44,7 +44,7 @@ fun part1(input: List<String>): Int {
         return toReturn
     }
 
-    val start = Node(0 to 0, Direction.SOUTH, 0)
+    val start = Node(0 to 0, Direction.DOWN, 0)
     val dijkstraGen = dijkstraGen(start, { _, n2 -> list[n2.pos.first][n2.pos.second] }, ::getNext)
     return dijkstraGen.filter { q -> q.key.pos == input.lastIndex to input[0].lastIndex }.values.min()
 }
@@ -98,7 +98,7 @@ fun part2(input: List<String>): Int {
         return toReturn
     }
 
-    val start = Node(0 to 0, Direction.EAST, 0)
+    val start = Node(0 to 0, Direction.RIGHT, 0)
     val dijkstraGen = dijkstraGen(start, { _, n2 -> list[n2.pos.first][n2.pos.second] }, ::getNext)
     val filter2 = dijkstraGen.filter { q -> q.key.pos == input.lastIndex to input[0].lastIndex }
     return filter2.values.min()

@@ -35,7 +35,7 @@ fun part1(inputLines: List<String>): Int {
         val scores = Array(grid.size) { IntArray(grid[0].size) { Int.MAX_VALUE } }
         val queue: Queue<Triple<Pair<Int, Int>, Direction, Int>> = LinkedList() // Holds (position, direction, score)
 
-        queue.offer(Triple(start, Direction.EAST, 0))
+        queue.offer(Triple(start, Direction.RIGHT, 0))
         scores[start.first][start.second] = 0
 
         var answer = Int.MAX_VALUE
@@ -103,7 +103,7 @@ fun part2(inputLines: List<String>): Int {
     }
 
     val (y, x) = inputLines.findPosition('S')
-    val start = Point(y to x, Direction.EAST)
+    val start = Point(y to x, Direction.RIGHT)
     val dijkstraGen = dijkstraGenWithPathHistory(start, { f, s -> rotationCost(f.dir, s.dir) + 1 }, ::getNext)
 
     fun collectVisitedPoints(current: Point, second: MutableMap<Point, MutableList<Point>>, visited: MutableSet<Point>): MutableSet<Point> {

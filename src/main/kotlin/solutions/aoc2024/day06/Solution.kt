@@ -18,7 +18,7 @@ fun part1(inputLines: List<String>): Int {
     val map = inputLines.map { it.replace('^', '.') }
     var (y, x) = inputLines.findPosition('^')
 
-    var dir = Direction.NORTH
+    var dir = Direction.UP
     var steps = 0
     val visitedPositions = mutableSetOf<Pair<Int, Int>>()
 
@@ -50,7 +50,7 @@ fun part2(inputLines: List<String>): Int {
     fun isEndlessLoop(map: List<CharArray>, startY: Int, startX: Int): Boolean {
         var y = startY
         var x = startX
-        var direction = Direction.NORTH
+        var direction = Direction.UP
         val visitedPositions = mutableSetOf<Triple<Int, Int, Direction>>()
 
         while (true) {

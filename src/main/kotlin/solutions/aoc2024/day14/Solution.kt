@@ -3,7 +3,7 @@ package solutions.aoc2024.day14
 import utils.Resources
 import utils.collections.extensions.containsSublist
 import utils.parser.getLongs
-import utils.grid.printGridFromPoints
+import utils.grid.printGridFromPairs
 
 val day = (object {}).javaClass.packageName.takeLast(2).toInt()
 
@@ -77,7 +77,7 @@ fun part2(inputLines: List<String>): Int {
         val currentPoints = listOfRobots.map { p -> p.x.toInt() to p.y.toInt() }
         // 10 as a 'final' value - the Christmas tree is already visible for 8.
         if (containsConsecutivePointsInRow(currentPoints, 10)) {
-            printGridFromPoints(currentPoints)
+            printGridFromPairs(currentPoints)
             return time + 1
         }
     }
