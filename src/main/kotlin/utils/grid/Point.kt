@@ -28,5 +28,8 @@ fun Pair<Int, Int>.toPoint(): Point {
     return Point(this.first, this.second)
 }
 
+fun <T> List<List<T>>.get(point: Point): T {
+    return this[point.y][point.x]
+}
 
 

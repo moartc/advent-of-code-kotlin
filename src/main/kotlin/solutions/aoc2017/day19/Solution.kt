@@ -2,7 +2,7 @@ package solutions.aoc2017.day19
 
 import utils.Resources
 import utils.collections.extensions.firstIndexedOrNull
-import utils.collections.extensions.get
+import utils.grid.get
 import utils.grid.Direction
 import utils.grid.Point
 import utils.grid.toPoint

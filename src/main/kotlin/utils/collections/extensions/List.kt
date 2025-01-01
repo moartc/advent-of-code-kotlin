@@ -1,7 +1,5 @@
 package utils.collections.extensions
 
-import utils.grid.Point
-
 
 fun <T> List<List<T>>.deepCopyMutable(): MutableList<MutableList<T>> = this.map { it.toMutableList() }.toMutableList()
 fun <T> List<List<T>>.deepCopyImmutable(): List<List<T>> = this.map { it.toList() }.toList()
@@ -45,8 +43,4 @@ fun <T> List<T>.containsSublist(sublist: List<T>): Boolean {
         }
     }
     return false
-}
-
-fun <T> List<List<T>>.get(point: Point): T {
-    return this[point.y][point.x]
 }
