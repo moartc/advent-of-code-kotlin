@@ -32,7 +32,6 @@ fun <T> Array<T>.shiftRight(d: Int): Array<T> {
     return right + left
 }
 
-
 inline fun <reified T> Array<Array<T>>.rotateClockwise(): Array<Array<T>> {
 
     var rows = this.size
@@ -52,6 +51,46 @@ inline fun <reified T> Array<Array<T>>.rotate180(): Array<Array<T>> {
     var rows = this.size
     var cols = this[0].size
     return Array(rows) { y -> Array(cols) { x -> this[rows - 1 - y][cols - 1 - x] } }
+}
+
+inline fun <reified T> Array<Array<T>>.shiftColumn(columnIndex: Int, by: Int) {
+    val numRows = this.size
+    if (numRows == 0 || columnIndex < 0 || columnIndex >= this[0].size) {
+        throw IllegalArgumentException("Invalid column index or empty array.")
+    }
+
+    val shift = (by % numRows + numRows) % numRows // Handle negative and large shifts
+    if (shift == 0) {
+        return
+    }
+
+    val tempColumn = Array(numRows) { rowIndex ->
+        this[(rowIndex - shift + numRows) % numRows][columnIndex]
+    }
+
+    for (rowIndex in this.indices) {
+        this[rowIndex][columnIndex] = tempColumn[rowIndex]
+    }
+}
+
+inline fun <reified T> Array<Array<T>>.shiftColumnNoMut(columnIndex: Int, by: Int): Array<Array<T>> {
+    val numRows = this.size
+    if (numRows == 0 || columnIndex < 0 || columnIndex >= this[0].size) {
+        throw IllegalArgumentException("Invalid column index or empty array.")
+    }
+
+    val shift = (by % numRows + numRows) % numRows
+    if (shift == 0) {
+        return this.map { it.clone() }.toTypedArray()
+    }
+
+    val newArray = this.map { it.clone() }.toTypedArray()
+
+    for (rowIndex in this.indices) {
+        val newRowIndex = (rowIndex + shift) % numRows
+        newArray[newRowIndex][columnIndex] = this[rowIndex][columnIndex]
+    }
+    return newArray
 }
 
 // CharArray
@@ -74,6 +113,46 @@ inline fun Array<CharArray>.rotate180(): Array<CharArray> {
     var rows = this.size
     var cols = this[0].size
     return Array(rows) { y -> CharArray(cols) { x -> this[rows - 1 - y][cols - 1 - x] } }
+}
+
+fun Array<CharArray>.shiftColumn(columnIndex: Int, by: Int) {
+    val numRows = this.size
+    if (numRows == 0 || columnIndex < 0 || columnIndex >= this[0].size) {
+        throw IllegalArgumentException("Invalid column index or empty array.")
+    }
+
+    val shift = (by % numRows + numRows) % numRows // Handle negative and large shifts
+    if (shift == 0) {
+        return
+    }
+
+    val tempColumn = Array(numRows) { rowIndex ->
+        this[(rowIndex - shift + numRows) % numRows][columnIndex]
+    }
+
+    for (rowIndex in this.indices) {
+        this[rowIndex][columnIndex] = tempColumn[rowIndex]
+    }
+}
+
+fun Array<CharArray>.shiftColumnNoMut(columnIndex: Int, by: Int): Array<CharArray> {
+    val numRows = this.size
+    if (numRows == 0 || columnIndex < 0 || columnIndex >= this[0].size) {
+        throw IllegalArgumentException("Invalid column index or empty array.")
+    }
+
+    val shift = (by % numRows + numRows) % numRows
+    if (shift == 0) {
+        return this.map { it.clone() }.toTypedArray()
+    }
+
+    val newArray = this.map { it.clone() }.toTypedArray()
+
+    for (rowIndex in this.indices) {
+        val newRowIndex = (rowIndex + shift) % numRows
+        newArray[newRowIndex][columnIndex] = this[rowIndex][columnIndex]
+    }
+    return newArray
 }
 
 fun Array<CharArray>.deepCopy(): Array<CharArray> = this.map { it.clone() }.toTypedArray()
@@ -122,6 +201,46 @@ inline fun Array<LongArray>.rotate180(): Array<LongArray> {
     var rows = this.size
     var cols = this[0].size
     return Array(rows) { y -> LongArray(cols) { x -> this[rows - 1 - y][cols - 1 - x] } }
+}
+
+fun Array<LongArray>.shiftColumn(columnIndex: Int, by: Int) {
+    val numRows = this.size
+    if (numRows == 0 || columnIndex < 0 || columnIndex >= this[0].size) {
+        throw IllegalArgumentException("Invalid column index or empty array.")
+    }
+
+    val shift = (by % numRows + numRows) % numRows // Handle negative and large shifts
+    if (shift == 0) {
+        return
+    }
+
+    val tempColumn = Array(numRows) { rowIndex ->
+        this[(rowIndex - shift + numRows) % numRows][columnIndex]
+    }
+
+    for (rowIndex in this.indices) {
+        this[rowIndex][columnIndex] = tempColumn[rowIndex]
+    }
+}
+
+fun Array<LongArray>.shiftColumnNoMut(columnIndex: Int, by: Int): Array<LongArray> {
+    val numRows = this.size
+    if (numRows == 0 || columnIndex < 0 || columnIndex >= this[0].size) {
+        throw IllegalArgumentException("Invalid column index or empty array.")
+    }
+
+    val shift = (by % numRows + numRows) % numRows
+    if (shift == 0) {
+        return this.map { it.clone() }.toTypedArray()
+    }
+
+    val newArray = this.map { it.clone() }.toTypedArray()
+
+    for (rowIndex in this.indices) {
+        val newRowIndex = (rowIndex + shift) % numRows
+        newArray[newRowIndex][columnIndex] = this[rowIndex][columnIndex]
+    }
+    return newArray
 }
 
 fun Array<LongArray>.deepCopy(): Array<LongArray> = this.map { it.clone() }.toTypedArray()
