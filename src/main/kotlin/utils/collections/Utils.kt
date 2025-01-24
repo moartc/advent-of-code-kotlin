@@ -5,7 +5,24 @@ fun <T> allCombinations(l1: List<T>, l2: List<T>): List<Pair<T, T>> {
 }
 
 fun <T> allUniqueCombinations(list: List<T>): List<Pair<T, T>> {
-    return list.indices.flatMap { i ->
-        list.indices.minus(0..i).map { j -> (list[i] to list[j]) }
+    val result = mutableListOf<Pair<T, T>>()
+    for (i in list.indices) {
+        for (j in i + 1 until list.size) {
+            result.add(list[i] to list[j])
+        }
     }
+    return result
+}
+
+fun <T> allUniqueCombinationsOrNull(list: List<T>): MutableList<Pair<T, T>>? {
+    if (list.size < 2) {
+        return null
+    }
+    val result = mutableListOf<Pair<T, T>>()
+    for (i in list.indices) {
+        for (j in i + 1 until list.size) {
+            result.add(list[i] to list[j])
+        }
+    }
+    return result
 }
