@@ -32,6 +32,112 @@ fun <T> Array<T>.shiftRight(d: Int): Array<T> {
     return right + left
 }
 
+fun CharArray.shiftLeft(v: Int): CharArray {
+    val effectiveShift = v % size
+    return (this.drop(effectiveShift) + this.take(effectiveShift)).toCharArray()
+}
+
+fun CharArray.shiftRight(v: Int): CharArray {
+    val effectiveShift = v % size
+    return (this.takeLast(effectiveShift) + this.dropLast(effectiveShift)).toCharArray()
+}
+
+fun IntArray.shiftLeft(v: Int): IntArray {
+    val effectiveShift = v % size
+    return (this.drop(effectiveShift) + this.take(effectiveShift)).toIntArray()
+}
+
+fun IntArray.shiftRight(v: Int): IntArray {
+    val effectiveShift = v % size
+    return (this.takeLast(effectiveShift) + this.dropLast(effectiveShift)).toIntArray()
+}
+
+fun DoubleArray.shiftLeft(v: Int): DoubleArray {
+    val effectiveShift = v % size
+    return (this.drop(effectiveShift) + this.take(effectiveShift)).toDoubleArray()
+}
+
+fun DoubleArray.shiftRight(v: Int): DoubleArray {
+    val effectiveShift = v % size
+    return (this.takeLast(effectiveShift) + this.dropLast(effectiveShift)).toDoubleArray()
+}
+
+fun CharArray.swap(i: Int, j: Int) {
+    if (i in indices && j in indices) {
+        val temp = this[i]
+        this[i] = this[j]
+        this[j] = temp
+    }
+}
+
+fun CharArray.swapAndReturn(i: Int, j: Int): CharArray {
+    if (i in indices && j in indices) {
+        val newArray = this.copyOf()
+        val temp = newArray[i]
+        newArray[i] = newArray[j]
+        newArray[j] = temp
+        return newArray
+    }
+    return this.copyOf()
+}
+
+fun IntArray.swap(i: Int, j: Int) {
+    if (i in indices && j in indices) {
+        val temp = this[i]
+        this[i] = this[j]
+        this[j] = temp
+    }
+}
+
+fun IntArray.swapAndReturn(i: Int, j: Int): IntArray {
+    if (i in indices && j in indices) {
+        val newArray = this.copyOf()
+        val temp = newArray[i]
+        newArray[i] = newArray[j]
+        newArray[j] = temp
+        return newArray
+    }
+    return this.copyOf()
+}
+
+fun DoubleArray.swap(i: Int, j: Int) {
+    if (i in indices && j in indices) {
+        val temp = this[i]
+        this[i] = this[j]
+        this[j] = temp
+    }
+}
+
+fun DoubleArray.swapAndReturn(i: Int, j: Int): DoubleArray {
+    if (i in indices && j in indices) {
+        val newArray = this.copyOf()
+        val temp = newArray[i]
+        newArray[i] = newArray[j]
+        newArray[j] = temp
+        return newArray
+    }
+    return this.copyOf()
+}
+
+fun <T> Array<T>.swap(i: Int, j: Int) {
+    if (i in indices && j in indices) {
+        val temp = this[i]
+        this[i] = this[j]
+        this[j] = temp
+    }
+}
+
+fun <T> Array<T>.swapAndReturn(i: Int, j: Int): Array<T> {
+    if (i in indices && j in indices) {
+        val newArray = this.copyOf()
+        val temp = newArray[i]
+        newArray[i] = newArray[j]
+        newArray[j] = temp
+        return newArray
+    }
+    return this.copyOf()
+}
+
 inline fun <reified T> Array<Array<T>>.rotateClockwise(): Array<Array<T>> {
 
     var rows = this.size
