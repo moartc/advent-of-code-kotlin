@@ -1,3 +1,5 @@
+package solutions.aoc2022.day21
+
 import utils.Resources
 
 fun main() {
