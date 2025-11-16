@@ -38,7 +38,7 @@ fun part1(inputLines: List<String>): Int {
     return bestPath(map).log()
 }
 
-
+// dijkstra
 fun bestPath(grid: List<List<Int>>): Int {
     val maxY = grid.size
     val maxX = grid[0].size
