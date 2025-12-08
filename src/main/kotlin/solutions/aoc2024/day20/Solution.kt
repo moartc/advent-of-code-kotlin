@@ -1,7 +1,7 @@
 package solutions.aoc2024.day20
 
+import dijkstraWithPathHistory
 import utils.Resources
-import utils.algorithms.dijkstraGenWithPathHistory
 import utils.collections.extensions.findPosition
 import kotlin.math.abs
 
@@ -17,7 +17,7 @@ fun main() {
 fun part1(inputLines: List<String>): Int {
 
     val start = inputLines.findPosition('S')
-    val dijkstraGen = dijkstraGenWithPathHistory(start, { _, _ -> 1 }, { p1 -> getNext(p1, inputLines) })
+    val dijkstraGen = dijkstraWithPathHistory(start, { _, _ -> 1 }, { p1 -> getNext(p1, inputLines) })
     val path = mutableListOf<Pair<Int, Int>>()
     path.add(start)
     dijkstraGen.second.keys.forEach { path.add(it) }
@@ -32,7 +32,7 @@ fun part1(inputLines: List<String>): Int {
 fun part2(inputLines: List<String>): Int {
 
     val start = inputLines.findPosition('S')
-    val dijkstraGen = dijkstraGenWithPathHistory(start, { _, _ -> 1 }, { p1 -> getNext(p1, inputLines) })
+    val dijkstraGen = dijkstraWithPathHistory(start, { _, _ -> 1 }, { p1 -> getNext(p1, inputLines) })
     val path = mutableListOf<Pair<Int, Int>>()
     path.add(start)
     dijkstraGen.second.keys.forEach { path.add(it) }

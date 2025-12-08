@@ -1,8 +1,8 @@
 package solutions.aoc2023.day17
 
-import utils.grid.Direction
+import dijkstra
 import utils.Resources
-import utils.algorithms.dijkstraGen
+import utils.grid.Direction
 
 fun main() {
 
@@ -45,7 +45,7 @@ fun part1(input: List<String>): Int {
     }
 
     val start = Node(0 to 0, Direction.DOWN, 0)
-    val dijkstraGen = dijkstraGen(start, { _, n2 -> list[n2.pos.first][n2.pos.second] }, ::getNext)
+    val dijkstraGen = dijkstra(start, { _, n2 -> list[n2.pos.first][n2.pos.second] }, ::getNext)
     return dijkstraGen.filter { q -> q.key.pos == input.lastIndex to input[0].lastIndex }.values.min()
 }
 
@@ -99,7 +99,7 @@ fun part2(input: List<String>): Int {
     }
 
     val start = Node(0 to 0, Direction.RIGHT, 0)
-    val dijkstraGen = dijkstraGen(start, { _, n2 -> list[n2.pos.first][n2.pos.second] }, ::getNext)
+    val dijkstraGen = dijkstra(start, { _, n2 -> list[n2.pos.first][n2.pos.second] }, ::getNext)
     val filter2 = dijkstraGen.filter { q -> q.key.pos == input.lastIndex to input[0].lastIndex }
     return filter2.values.min()
 }

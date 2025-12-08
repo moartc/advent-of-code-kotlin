@@ -1,9 +1,9 @@
 package solutions.aoc2024.day16
 
-import utils.grid.Direction
+import dijkstraWithPathHistory
 import utils.Resources
-import utils.algorithms.dijkstraGenWithPathHistory
 import utils.collections.extensions.findPosition
+import utils.grid.Direction
 import java.util.*
 import kotlin.math.abs
 
@@ -104,9 +104,9 @@ fun part2(inputLines: List<String>): Int {
 
     val (y, x) = inputLines.findPosition('S')
     val start = Point(y to x, Direction.RIGHT)
-    val dijkstraGen = dijkstraGenWithPathHistory(start, { f, s -> rotationCost(f.dir, s.dir) + 1 }, ::getNext)
+    val dijkstraGen = dijkstraWithPathHistory(start, { f, s -> rotationCost(f.dir, s.dir) + 1 }, ::getNext)
 
-    fun collectVisitedPoints(current: Point, second: MutableMap<Point, MutableList<Point>>, visited: MutableSet<Point>): MutableSet<Point> {
+    fun collectVisitedPoints(current: Point, second: Map<Point, List<Point>>, visited: MutableSet<Point>): MutableSet<Point> {
         visited.add(current)
         second[current]?.forEach { prev ->
             if (prev !in visited) {

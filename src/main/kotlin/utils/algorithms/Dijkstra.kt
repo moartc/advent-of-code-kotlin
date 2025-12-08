@@ -1,82 +1,176 @@
-package utils.algorithms
-
-import java.util.*
-import kotlin.Comparator
+import utils.algorithms.withoutDiagonal
+import java.util.PriorityQueue
 
 
-class GFG(private val numOfVertices: Int) {
+fun <T> dijkstra(
+    src: T,
+    distProvider: (T, T) -> Int,
+    getNext: (T) -> List<T>
+): Map<T, Int> {
+    val queue = PriorityQueue<Pair<T, Int>>(compareBy { it.second })
+    val visited = mutableSetOf<T>()
+    val dist = mutableMapOf<T, Int>()
 
-    private lateinit var adj: List<MutableList<Pair<Int, Int>>>
-    val dist: IntArray = IntArray(numOfVertices)
-    private val settled = mutableSetOf<Int>()
-    private val queue = PriorityQueue(numOfVertices, PairComparator())
+    queue.add(src to 0)
+    dist[src] = 0
 
-    fun dijkstra(adj: List<MutableList<Pair<Int, Int>>>, src: Int) {
-        this.adj = adj
-        for (i in 0 until numOfVertices) {
-            dist[i] = Int.MAX_VALUE
-        }
-        queue.add(src to 0)
-        dist[src] = 0
-        while (settled.size != numOfVertices) {
-            if (queue.isEmpty()) return
-            val u = queue.remove().first
-            if (settled.contains(u)) {
-                continue
-            }
-            settled.add(u)
-            eNeighbours(u)
-        }
-    }
+    while (queue.isNotEmpty()) {
+        val (u, currentDist) = queue.remove()
 
-    private fun eNeighbours(u: Int) {
-        var edgeDistance: Int
-        var newDistance: Int
-        for (i in adj[u].indices) {
-            val v = adj[u][i]
-            if (!settled.contains(v.first)) {
-                edgeDistance = v.second
-                newDistance = dist[u] + edgeDistance
-                if (newDistance < dist[v.first]) dist[v.first] = newDistance
-                queue.add(v.first to dist[v.first])
+        if (u in visited) continue
+        visited.add(u)
+
+        for (v in getNext(u)) {
+            val edgeDistance = distProvider(u, v)
+            val newDistance = currentDist + edgeDistance
+
+            if (v !in dist || newDistance < dist[v]!!) {
+                dist[v] = newDistance
+                queue.add(v to newDistance)
             }
         }
     }
+
+    return dist
 }
 
-private fun example(arg: Array<String>) {
+/**
+ * Dijkstra with path tracking - stores ALL nodes that lead to the best distance.
+ * for finding all shortest paths
+ *
+ * @param src The starting node
+ * @param distProvider Function that returns the edge weight between two nodes
+ * @param getNext Function that returns all neighbors of a node
+ * @return Pair of (distance map, predecessor map with all nodes that achieve best distance)
+ */
+fun <T> dijkstraWithPathHistory(
+    src: T,
+    distProvider: (T, T) -> Int,
+    getNext: (T) -> List<T>
+): Pair<Map<T, Int>, Map<T, List<T>>> {
+    val queue = PriorityQueue<Pair<T, Int>>(compareBy { it.second })
+    val visited = mutableSetOf<T>()
+    val dist = mutableMapOf<T, Int>()
+    val previous = mutableMapOf<T, MutableList<T>>()
 
-    val numOfVertices = 5
-    val source = 0
-    val nodes: MutableList<MutableList<Pair<Int, Int>>> = ArrayList()
+    queue.add(src to 0)
+    dist[src] = 0
 
-    // Initialize list of nodes
-    for (i in 0 until numOfVertices) {
-        val item: MutableList<Pair<Int, Int>> = ArrayList()
-        nodes.add(item)
+    while (queue.isNotEmpty()) {
+        val (u, currentDist) = queue.remove()
+
+        if (u in visited) continue
+        visited.add(u)
+
+        for (v in getNext(u)) {
+            val edgeDistance = distProvider(u, v)
+            val newDistance = currentDist + edgeDistance
+
+            when {
+                v !in dist || newDistance < dist[v]!! -> {
+                    // Found a better path
+                    dist[v] = newDistance
+                    previous[v] = mutableListOf(u)
+                    queue.add(v to newDistance)
+                }
+
+                newDistance == dist[v]!! -> {
+                    // Found an equally good path
+                    previous.getOrPut(v) { mutableListOf() }.add(u)
+                }
+            }
+        }
     }
 
-    // node -> node to cost
-    nodes[0].add(1 to 9)
-    nodes[0].add(2 to 6)
-    nodes[0].add(3 to 5)
-    nodes[0].add(4 to 3)
-    nodes[2].add(1 to 2)
-    nodes[2].add(3 to 4)
-
-    val dpq = GFG(numOfVertices)
-    dpq.dijkstra(nodes, source)
-
-    // shortest path from source (0) to every other node
-    for (i in dpq.dist.indices) {
-        println(source.toString() + " to " + i + " is " + dpq.dist[i])
-    }
+    return dist to previous
 }
 
-class PairComparator : Comparator<Pair<Int, Int>> {
+/**
+ * Reconstructs a single shortest path from src to target.
+ * Works with the path history from dijkstraWithPathHistory.
+ */
+fun <T> reconstructPath(target: T, previous: Map<T, List<T>>): List<T>? {
+    if (target !in previous) return null
 
-    override fun compare(p0: Pair<Int, Int>, p1: Pair<Int, Int>): Int {
-        if (p0.second < p1.second) return -1
-        return if (p0.second > p1.second) 1 else 0
+    val path = mutableListOf(target)
+    var current = target
+
+    while (current in previous && previous[current]!!.isNotEmpty()) {
+        current = previous[current]!!.first() // Take first predecessor
+        path.add(current)
     }
+
+    return path.reversed()
+}
+
+/**
+ * Reconstructs ALL shortest paths from src to target.
+ * Works with the path history from dijkstraWithPathHistory.
+ */
+fun <T> reconstructAllPaths(target: T, previous: Map<T, List<T>>): List<List<T>> {
+    if (target !in previous) return listOf(listOf(target))
+
+    fun buildPaths(node: T): List<List<T>> {
+        if (node !in previous || previous[node]!!.isEmpty()) {
+            return listOf(listOf(node))
+        }
+
+        val allPaths = mutableListOf<List<T>>()
+        for (pred in previous[node]!!) {
+            for (path in buildPaths(pred)) {
+                allPaths.add(path + node)
+            }
+        }
+        return allPaths
+    }
+
+    return buildPaths(target)
+}
+
+/**
+ * Finds all nodes that are part of ANY shortest path from src to target.
+ * for "how many tiles are part of any shortest path".
+ */
+fun <T> allNodesInShortestPaths(target: T, previous: Map<T, List<T>>): Set<T> {
+    val nodesInPath = mutableSetOf<T>()
+    val queue = ArrayDeque<T>()
+    queue.add(target)
+    nodesInPath.add(target)
+
+    while (queue.isNotEmpty()) {
+        val current = queue.removeFirst()
+        previous[current]?.forEach { pred ->
+            if (pred !in nodesInPath) {
+                nodesInPath.add(pred)
+                queue.add(pred)
+            }
+        }
+    }
+
+    return nodesInPath
+}
+
+/**
+ * Grid-specific Dijkstra for 2D grids with integer costs.
+ * Convenience wrapper around dijkstra() for common grid problems.
+ */
+fun dijkstraGrid(
+    grid: List<List<Int>>,
+    start: Pair<Int, Int>,
+    end: Pair<Int, Int>,
+    directions: Array<Pair<Int, Int>> = withoutDiagonal
+): Int? {
+    val result = dijkstra(
+        src = start,
+        distProvider = { _, next -> grid[next.first][next.second] },
+        getNext = { (y, x) ->
+            directions
+                .map { (dy, dx) -> y + dy to x + dx }
+                .filter { (ny, nx) ->
+                    ny in grid.indices && nx in grid[0].indices
+                }
+        }
+    )
+
+    return result[end]
 }
