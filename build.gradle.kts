@@ -3,7 +3,7 @@ plugins {
     application
 }
 
-group = "com.szwester"
+group = "com.moartc"
 version = "1.0-SNAPSHOT"
 
 repositories {
@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-    implementation("org.junit.jupiter:junit-jupiter:5.8.1")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
     testImplementation(kotlin("test"))
     implementation(kotlin("script-runtime"))
     // https://mvnrepository.com/artifact/org.jgrapht/jgrapht-core
