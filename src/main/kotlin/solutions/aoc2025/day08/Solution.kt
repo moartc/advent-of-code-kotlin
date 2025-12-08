@@ -1,10 +1,12 @@
 package solutions.aoc2025.day08
 
 import utils.Resources
-import utils.grid.allPointsBetween
+import utils.algorithms.UnionFind
+import utils.collections.extensions.allPairs
+import utils.collections.extensions.kNearestPairs
+import utils.collections.extensions.productOfTopK
 import utils.parser.getLongs
 import utils.point.Point3D
-import kotlin.math.sqrt
 
 val day = (object {}).javaClass.packageName.takeLast(2).toInt()
 
@@ -12,62 +14,52 @@ fun main() {
 
     val inputLines = Resources.getLines(2025, day)
 
-    println("part1 = ${part1(inputLines) == 97384L}")
-    println("part2 = ${part2(inputLines) == 9003685096}")
+    println("part1 = ${part1(inputLines)}")
+    println("part2 = ${part2(inputLines)}")
 }
 
 fun part1(inputLines: List<String>): Long {
-    val points = inputLines.map { l -> l.getLongs() }.map { l -> Point3D(l[0], l[1], l[2]) }
-    var map = points.associateWith { _ -> -1 }.toMutableMap()
-    val pairsDist = mutableMapOf<Pair<Point3D, Point3D>, Double>()
+    val points: List<Point3D> = inputLines.map { l -> l.getLongs() }.map { l -> Point3D(l[0], l[1], l[2]) }
 
-    for ((i1, e1) in map.entries.withIndex()) {
-        for ((i2, e2) in map.entries.withIndex()) {
-            if (i2 <= i1) {
-                continue
-            }
-            val d = e1.key.distanceTo(e2.key)
-            pairsDist[e1.key to e2.key] = d
-        }
-    }
-    val toConnect = pairsDist.entries.sortedBy { p -> p.value }.take(1000)
+    val uf = UnionFind<Point3D>()
 
-    for ((p, _) in toConnect) {
-        map = connect(p.first, p.second, map)
-    }
-
-    val pp = map.values.groupingBy { it }
-        .eachCount().entries.filter { e -> e.key != -1 }
-        .map { q -> q.value.toLong() }
-        .sorted()
-        .reversed()
-    return pp[0] * pp[1] * pp[2]
+    points.forEach { uf.add(it) }
+    val listOfPairs = points.kNearestPairs(1000) { a, b -> a.distanceTo(b) }
+    listOfPairs.forEach { (a, b) -> uf.union(a, b) }
+    return uf.getGroups().values.productOfTopK(3) { it.size.toLong() }
 }
 
 fun part2(inputLines: List<String>): Long {
-    val points = inputLines.map { l -> l.getLongs() }.map { l -> Point3D(l[0], l[1], l[2]) }
-    var map = points.associateWith { _ -> -1 }.toMutableMap()
+    val points: List<Point3D> = inputLines.map { l -> l.getLongs() }.map { l -> Point3D(l[0], l[1], l[2]) }
 
-    var lastBox1: Point3D? = null
-    var lastBox2: Point3D? = null
-    var connections = 0
+    val uf = UnionFind<Point3D>()
+
+    points.forEach { p -> uf.add(p) }
+
+    val allPairsWithDist = points.allPairs()
+        .map { (a, b) -> Triple(a, b, a.distanceTo(b)) }
+        .toList()
+
+    var closestPair: Pair<Point3D, Point3D>? = null
 
     while (true) {
-        val connected = map.values.filter { it != -1 }.distinct()
-        val unconnected = map.values.count { it == -1 }
-
-        if (connected.size == 1 && unconnected == 0) {
-            // all found
-            break
+        var newPair: Pair<Point3D, Point3D>? = null
+        var minDist = Double.MAX_VALUE
+        for ((a, b, dist) in allPairsWithDist) {
+            if (uf.find(a) == uf.find(b)) {
+                continue
+            }
+            if (minDist > dist) {
+                minDist = dist
+                newPair = a to b
+            }
         }
-
-        val (newMap, boxes) = findClosestAndConnect(map)
-        connections++
-        lastBox1 = boxes.first
-        lastBox2 = boxes.second
-        map = newMap
+        if (newPair == null) {
+            return closestPair!!.first.x * closestPair.second.x
+        }
+        uf.union(newPair.first, newPair.second)
+        closestPair = newPair
     }
-    return lastBox1!!.x * lastBox2!!.x
 }
 
 fun findClosestAndConnect(m: Map<Point3D, Int>): Pair<MutableMap<Point3D, Int>, Pair<Point3D, Point3D>> {
