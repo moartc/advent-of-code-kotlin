@@ -16,6 +16,7 @@ dependencies {
     implementation(kotlin("script-runtime"))
     // https://mvnrepository.com/artifact/org.jgrapht/jgrapht-core
     implementation("org.jgrapht:jgrapht-core:1.5.2")
+    implementation("com.google.ortools:ortools-java:9.12.4544")
 
 }
 
